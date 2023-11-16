@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Client", "PixelGrid.Client\PixelGrid.Client.csproj", "{37340C91-2031-4939-B7B6-80D2370FC608}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Api", "PixelGrid.Api\PixelGrid.Api.csproj", "{0A0E9814-C34F-40F0-8BE8-E85FADD1D1C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Shared", "PixelGrid.Shared\PixelGrid.Shared.csproj", "{42F39823-28C8-47BD-A492-332F8CA15147}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Web.Server", "PixelGrid.Web\Server\PixelGrid.Web.Server.csproj", "{AA8FDAC4-ADF7-4BBA-A280-A4502B84F3FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Web.Client", "PixelGrid.Web\Client\PixelGrid.Web.Client.csproj", "{52DA37DE-B561-4CA4-AFEC-6F13243635E8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37340C91-2031-4939-B7B6-80D2370FC608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37340C91-2031-4939-B7B6-80D2370FC608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37340C91-2031-4939-B7B6-80D2370FC608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37340C91-2031-4939-B7B6-80D2370FC608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A0E9814-C34F-40F0-8BE8-E85FADD1D1C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A0E9814-C34F-40F0-8BE8-E85FADD1D1C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A0E9814-C34F-40F0-8BE8-E85FADD1D1C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A0E9814-C34F-40F0-8BE8-E85FADD1D1C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42F39823-28C8-47BD-A492-332F8CA15147}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42F39823-28C8-47BD-A492-332F8CA15147}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42F39823-28C8-47BD-A492-332F8CA15147}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42F39823-28C8-47BD-A492-332F8CA15147}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA8FDAC4-ADF7-4BBA-A280-A4502B84F3FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA8FDAC4-ADF7-4BBA-A280-A4502B84F3FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA8FDAC4-ADF7-4BBA-A280-A4502B84F3FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA8FDAC4-ADF7-4BBA-A280-A4502B84F3FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52DA37DE-B561-4CA4-AFEC-6F13243635E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52DA37DE-B561-4CA4-AFEC-6F13243635E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52DA37DE-B561-4CA4-AFEC-6F13243635E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52DA37DE-B561-4CA4-AFEC-6F13243635E8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
