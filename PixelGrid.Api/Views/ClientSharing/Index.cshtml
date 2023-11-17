@@ -3,7 +3,7 @@
     ViewData["Title"] = "Manage a Client";
 }
 
-<h1 class="display-4">Manage Client @Model.Client.Name</h1>
+<h1>Manage Client @Model.Client.Name</h1>
 
 <h2>Shared Users</h2>
 <table class="table table-striped table-hover">
@@ -30,32 +30,31 @@
 
 <partial name="Components/ClientDeleteShareModal" />
 
-<h2>Share with a new User</h2>
+<h2>Share this Client with a User</h2>
 @if (Model.Users.Count > 0)
 {
     <form asp-controller="ClientSharing" asp-action="Share" enctype="multipart/form-data" method="post">
-        <div class="mb-3">
-            <label for="shareWithUserList" class="form-label">Share with User</label>
+        <input hidden="hidden" name="clientId" value="@Model.Client.Id"/>
+        
+        <div class="input-group mb-3">
             <select class="form-control dselect" id="shareWithUserList" name="userId">
                 @foreach (var user in Model.Users)
                 {
                     <option value="@user.Id">@user.Email</option>
                 }
             </select>
-        </div>
 
-        <input hidden="hidden" name="clientId" value="@Model.Client.Id"/>
-
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="submit" class="btn btn-primary">Share</button>
+            <button class="btn btn-primary" type="submit">Share</button>
         </div>
     </form>
 }
 else
 {
-    <h2>No more users to share with </h2>
+    <div class="alert alert-primary">
+        No more users to share this client with.
+    </div>
 }
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a class="btn btn-primary" asp-controller="Client" asp-action="Index">Back to Clients overview</a>
+    <a class="btn btn-secondary" asp-controller="Client" asp-action="Index">Back to Clients overview</a>
 </div>
