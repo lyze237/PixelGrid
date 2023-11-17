@@ -1,0 +1,108 @@
+﻿@using PixelGrid.Api.Data
+@model PixelGrid.Api.Views.Client.Models.ClientIndexModel
+@{
+    ViewData["Title"] = "Clients";
+}
+
+<h1 class="display-4">Here are all your own clients:</h1>
+
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>@nameof(Client.Id)</th>
+        <th>@nameof(Client.Name)</th>
+        <th>@nameof(Client.Public)</th>
+        <th>@nameof(Client.LastRender)</th>
+        <th>@nameof(Client.LastConnected)</th>
+        <th>Shared with</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var client in Model.OwnClients)
+    {
+        <tr>
+            <td>@client.Id</td>
+            <td>@client.Name</td>
+            <td>
+                @if (client.Public)
+                {
+                    <a asp-controller="Client" asp-action="ToggleVisibility" asp-route-id="@client.Id" class="btn btn-success">Set Private</a>
+                }
+                else
+                {
+                    <a asp-controller="Client" asp-action="ToggleVisibility" asp-route-id="@client.Id" class="btn btn-info">Set Public</a>
+                }
+            </td>
+            <td>@client.LastRender</td>
+            <td>@client.LastConnected</td>
+            <td>@client.SharedUsers.Count Users <a class="btn btn-sm btn-warning" asp-controller="ClientSharing" asp-action="Index" asp-route-id="@client.Id">Manage</a></td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#clientDeleteModal" data-bs-id="@client.Id" data-bs-name="@client.Name">Delete</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a asp-controller="Client" asp-action="Register" class="btn btn-primary">Register Client</a>
+</div>
+
+<h1 class="display-4">And here are all clients shared with you:</h1>
+
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>@nameof(Client.Id)</th>
+        <th>@nameof(Client.Name)</th>
+        <th>@nameof(Client.Owner)</th>
+        <th>@nameof(Client.Public)</th>
+        <th>@nameof(Client.LastRender)</th>
+        <th>@nameof(Client.LastConnected)</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var client in Model.SharedClients)
+    {
+        <tr>
+            <td>@client.Id</td>
+            <td>@client.Name</td>
+            <td>@client.Owner.UserName</td>
+            <td>
+                  <input class="form-check-input" type="checkbox" id="checkboxNoLabel" disabled="disabled" @(client.Public ? "checked='checked'" : "")>
+            </td>
+            <td>@client.LastRender</td>
+            <td>@client.LastConnected</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h1 class="display-4">And here are all public clients:</h1>
+
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>@nameof(Client.Id)</th>
+        <th>@nameof(Client.Name)</th>
+        <th>@nameof(Client.Owner)</th>
+        <th>@nameof(Client.LastRender)</th>
+        <th>@nameof(Client.LastConnected)</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var client in Model.PublicClients)
+    {
+        <tr>
+            <td>@client.Id</td>
+            <td>@client.Name</td>
+            <td>@client.Owner.UserName</td>
+            <td>@client.LastRender</td>
+            <td>@client.LastConnected</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<partial name="Components/ClientDeleteModal" />

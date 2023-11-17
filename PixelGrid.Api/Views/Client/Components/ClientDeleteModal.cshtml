@@ -1,0 +1,39 @@
+﻿<div class="modal fade" id="clientDeleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-controller="Client" asp-action="Delete" method="get">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="deleteClientModalId" class="col-form-label">Id</label>
+                        <input type="text" class="form-control" id="deleteClientModalId" name="id" placeholder="Id" required="required" readonly="readonly" minlength="3">
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteClientModalName" class="col-form-label">Name</label>
+                        <input type="text" class="form-control" id="deleteClientModalName" name="name" placeholder="Name" required="required" readonly="readonly" minlength="3">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const deleteModal = document.getElementById('clientDeleteModal');
+deleteModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    
+    const id = button.getAttribute('data-bs-id');
+    const name = button.getAttribute('data-bs-name');
+    
+    deleteModal.querySelector('.modal-title').textContent = 'Delete Client ' + name;
+    deleteModal.querySelector('#deleteClientModalId').value = id;
+    deleteModal.querySelector('#deleteClientModalName').value = name;
+});
+</script>

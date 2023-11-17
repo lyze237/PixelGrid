@@ -1,0 +1,52 @@
+﻿<div class="modal fade" id="clientDeleteShareModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-controller="ClientSharing" asp-action="Delete" enctype="multipart/form-data" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Share with User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="deleteClientShareModalClientId" class="col-form-label">Client Id</label>
+                        <input type="text" class="form-control" id="deleteClientShareModalClientId" name="clientId" placeholder="Client Id" required="required" readonly="readonly" minlength="3">
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteClientShareModalClientName" class="col-form-label">Client Name</label>
+                        <input type="text" class="form-control" id="deleteClientShareModalClientName" placeholder="Client Name" required="required" readonly="readonly" minlength="3">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="deleteClientShareModalUserId" class="col-form-label">User Id</label>
+                        <input type="text" class="form-control" id="deleteClientShareModalUserId" name="userId" placeholder="User Id" required="required" readonly="readonly" minlength="3">
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteClientShareModalUserEmail" class="col-form-label">User Email</label>
+                        <input type="text" class="form-control" id="deleteClientShareModalUserEmail" placeholder="Email" required="required" readonly="readonly" minlength="3">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const deleteModal = document.getElementById('clientDeleteShareModal');
+deleteModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    
+    const clientId = button.getAttribute('data-bs-clientId');
+    const clientName = button.getAttribute('data-bs-clientName');
+    const userId = button.getAttribute('data-bs-userId');
+    const userEmail = button.getAttribute('data-bs-userEmail');
+    
+    deleteModal.querySelector('.modal-title').textContent = 'Delete Share with User ' + userEmail;
+    deleteModal.querySelector('#deleteClientShareModalClientId').value = clientId;
+    deleteModal.querySelector('#deleteClientShareModalClientName').value = clientName;
+    deleteModal.querySelector('#deleteClientShareModalUserId').value = userId;
+    deleteModal.querySelector('#deleteClientShareModalUserEmail').value = userEmail;
+});
+</script>

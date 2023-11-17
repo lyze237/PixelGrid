@@ -1,0 +1,32 @@
+﻿@model string?
+@{
+    ViewData["Title"] = "Register a Client";
+}
+
+@if (string.IsNullOrWhiteSpace(Model))
+{
+    <h1 class="display-4">Register a Client</h1>
+
+    <form asp-controller="Client" asp-action="Register" enctype="multipart/form-data" method="post">
+        <div class="mb-3">
+            <label for="clientName" class="form-label">Client Name</label>
+            <input type="text" class="form-control" id="clientName" name="name" placeholder="Name" required="required" minlength="3">
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+    </form>
+}
+else
+{
+    <h1 class="display-4">Please register the client with this token:</h1>
+    <div class="mb-3">
+        <label for="clientToken" class="form-label">Client Token</label>
+        <textarea class="form-control" id="clientToken" rows="5">@Model</textarea>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a class="btn btn-primary" title="You can't view this token anymore in the future." asp-controller="Client" asp-action="Index">View all Clients</a>
+    </div>
+}
