@@ -1,27 +1,27 @@
-﻿@model PixelGrid.Api.Views.Client.Models.ClientManageModel
+﻿@model PixelGrid.Api.Controllers.ShareableResourceController<PixelGrid.Api.Data.Client>.ShareableResourceIndexModel
 @{
     ViewData["Title"] = "Manage a Client";
 }
 
-<h1>Manage Client @Model.Client.Name</h1>
+<h1>Manage Client @Model.Resource.Name</h1>
 
 <h2>Shared Users</h2>
 <table class="table table-striped table-hover">
     <thead>
     <tr>
-        <th>@nameof(Model.Client.Owner.UserName)</th>
-        <th>@nameof(Model.Client.Owner.Email)</th>
+        <th>@nameof(Model.Resource.Owner.UserName)</th>
+        <th>@nameof(Model.Resource.Owner.Email)</th>
         <th>Revoke</th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var user in Model.Client.SharedUsers)
+    @foreach (var user in Model.Resource.SharedWith)
     {
         <tr>
             <td>@user.UserName</td>
             <td>@user.Email</td>
             <td>
-                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#clientDeleteShareModal" data-bs-clientId="@Model.Client.Id" data-bs-clientName="@Model.Client.Name" data-bs-userId="@user.Id" data-bs-userEmail="@user.Email">Revoke</button>
+                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#clientDeleteShareModal" data-bs-clientId="@Model.Resource.Id" data-bs-clientName="@Model.Resource.Name" data-bs-userId="@user.Id" data-bs-userEmail="@user.Email">Revoke</button>
             </td>
         </tr>
     }
@@ -34,7 +34,7 @@
 @if (Model.Users.Count > 0)
 {
     <form asp-controller="ClientSharing" asp-action="Share" enctype="multipart/form-data" method="post">
-        <input hidden="hidden" name="clientId" value="@Model.Client.Id"/>
+        <input hidden="hidden" name="resourceId" value="@Model.Resource.Id"/>
         
         <div class="input-group mb-3">
             <select class="form-control dselect" id="shareWithUserList" name="userId">

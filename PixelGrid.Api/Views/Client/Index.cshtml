@@ -39,7 +39,7 @@
                 </td>
                 <td>@client.LastRender</td>
                 <td>@client.LastConnected</td>
-                <td>@client.SharedUsers.Count Users <a class="btn btn-sm btn-warning" asp-controller="ClientSharing" asp-action="Index" asp-route-id="@client.Id">Manage</a></td>
+                <td>@client.SharedWith.Count Users <a class="btn btn-sm btn-warning" asp-controller="ClientSharing" asp-action="Index" asp-route-id="@client.Id">Manage</a></td>
                 <td>
                     <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#clientDeleteModal" data-bs-id="@client.Id" data-bs-name="@client.Name">Delete</button>
                 </td>

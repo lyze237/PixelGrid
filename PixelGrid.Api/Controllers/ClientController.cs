@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NuGet.Common;
 using PixelGrid.Api.Data;
 using PixelGrid.Api.Options;
 using PixelGrid.Api.Views.Client.Models;
@@ -26,12 +25,12 @@ public class ClientController(ApplicationDbContext dbContext, UserManager<User> 
 
         var model = new ClientIndexModel(
             await dbContext.Clients
-                .Include(c => c.SharedUsers)
+                .Include(c => c.SharedWith)
                 .Where(c => c.Owner == user)
                 .ToListAsync(),
             await dbContext.Clients
                 .Include(c => c.Owner)
-                .Where(c => c.SharedUsers.Contains(user))
+                .Where(c => c.SharedWith.Contains(user))
                 .ToListAsync(),
             await dbContext.Clients
                 .Include(c => c.Owner)
@@ -65,7 +64,7 @@ public class ClientController(ApplicationDbContext dbContext, UserManager<User> 
 
         var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
         var client = await dbContext.Clients
-            .Include(c => c.SharedUsers)
+            .Include(c => c.SharedWith)
             .FirstOrDefaultAsync(c => c.Id == id && c.Owner == user);
 
         if (client == null)
