@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PixelGrid.Api.Data;
+using PixelGrid.Api.Hubs;
 using PixelGrid.Api.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,6 @@ builder.Services.AddAuthentication()
     .AddJwtBearer(options =>
     {
         var services = builder.Services.BuildServiceProvider();
-        
         var jwtOptions = services.GetRequiredService<IOptions<JwtOptions>>().Value;
         
         options.TokenValidationParameters = new TokenValidationParameters
@@ -38,8 +38,24 @@ builder.Services.AddAuthentication()
             ValidAudience = jwtOptions.Issuer,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrWhiteSpace(accessToken) && path.StartsWithSegments("/hubs"))
+                    context.Token = accessToken;
+                
+                return Task.CompletedTask;
+            }
+        };
     });
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -67,6 +83,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+app.MapHub<TestHub>("/hubs/test");
 
 using (var scope = app.Services.CreateScope())
 {

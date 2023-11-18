@@ -41,4 +41,8 @@
       <Folder Include="wwwroot\lib\dselect\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\PixelGrid.Shared\PixelGrid.Shared.csproj" />
+    </ItemGroup>
+
 </Project>
