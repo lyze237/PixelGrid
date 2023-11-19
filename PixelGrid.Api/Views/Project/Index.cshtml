@@ -7,74 +7,92 @@
 
 <h1>Manage Projects</h1>
 
-<h2>Your own Projects</h2>
-@if (Model.OwnProjects.Count > 0)
-{
-    <table class="table table-striped table-hover">
-        <thead>
-        <tr>
-            <th>@nameof(Project.Id)</th>
-            <th>@nameof(Project.Name)</th>
-            <th>Shared with</th>
-            <th>Delete</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var project in Model.OwnProjects)
-        {
-            <tr>
-                <td>@project.Id</td>
-                <td>@project.Name</td>
-                <td>@project.SharedWith.Count Users <a class="btn btn-sm btn-warning" asp-controller="ProjectSharing" asp-action="Index" asp-route-id="@project.Id">Manage</a></td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#projectDeleteModal" data-bs-id="@project.Id" data-bs-name="@project.Name">Delete</button>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-    
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a asp-controller="Project" asp-action="Create" class="btn btn-primary">Create Project</a>
-    </div>   
-}
-else
-{
-    <div class="alert alert-primary">
-        You haven't created any Projects yet.
-        <a asp-controller="Project" asp-action="Create" class="btn btn-primary">Create Project</a>
-    </div>
-}
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#own" type="button" role="tab">@Model.OwnProjects.Count Owned Projects</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#shared" type="button" role="tab">@Model.SharedProjects.Capacity Shared Projects</button>
+    </li>
+</ul>
+<div class="tab-content">
 
-<h2>Projects shared with you</h2>
 
-@if (Model.SharedProjects.Count > 0)
-{
-    <table class="table table-striped table-hover">
-        <thead>
-        <tr>
-            <th>@nameof(Project.Id)</th>
-            <th>@nameof(Project.Name)</th>
-            <th>@nameof(Project.Owner)</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var project in Model.SharedProjects)
+    <div class="tab-pane fade show active" id="own" role="tabpanel">
+        <h2>Your own Projects</h2>
+        @if (Model.OwnProjects.Count > 0)
         {
-            <tr>
-                <td>@project.Id</td>
-                <td>@project.Name</td>
-                <td>@project.Owner.UserName</td>
-            </tr>
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>@nameof(Project.Id)</th>
+                    <th>@nameof(Project.Name)</th>
+                    <th>Shared with</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var project in Model.OwnProjects)
+                {
+                    <tr>
+                        <td>@project.Id</td>
+                        <td>@project.Name</td>
+                        <td>@project.SharedWith.Count Users <a class="btn btn-sm btn-warning" asp-controller="ProjectSharing" asp-action="Index" asp-route-id="@project.Id">Manage</a></td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#projectDeleteModal" data-bs-id="@project.Id" data-bs-name="@project.Name">Delete</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a asp-controller="Project" asp-action="Create" class="btn btn-primary">Create Project</a>
+            </div>
         }
-        </tbody>
-    </table>
-}
-else
-{
-    <div class="alert alert-primary">
-        No User shared Projects with you.
+        else
+        {
+            <div class="alert alert-primary">
+                You haven't created any Projects yet.
+                <a asp-controller="Project" asp-action="Create" class="btn btn-primary">Create Project</a>
+            </div>
+        }
     </div>
-}
+
+
+    <div class="tab-pane fade" id="shared" role="tabpanel">
+        <h2>Projects shared with you</h2>
+
+        @if (Model.SharedProjects.Count > 0)
+        {
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>@nameof(Project.Id)</th>
+                    <th>@nameof(Project.Name)</th>
+                    <th>@nameof(Project.Owner)</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var project in Model.SharedProjects)
+                {
+                    <tr>
+                        <td>@project.Id</td>
+                        <td>@project.Name</td>
+                        <td>@project.Owner.UserName</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-primary">
+                No User shared Projects with you.
+            </div>
+        }
+    </div>
+</div>
+
 
 <partial name="Components/ProjectDeleteModal"/>
