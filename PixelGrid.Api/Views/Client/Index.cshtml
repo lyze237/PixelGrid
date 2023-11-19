@@ -1,5 +1,5 @@
 ﻿@using PixelGrid.Api.Data
-@model PixelGrid.Api.Views.Client.Models.ClientIndexModel
+@model PixelGrid.Api.Controllers.ClientIndexModel
 @{
     ViewData["Title"] = "Clients";
 }
@@ -47,7 +47,6 @@
         }
         </tbody>
     </table>
-    
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
         <a asp-controller="Client" asp-action="Register" class="btn btn-primary">Register Client</a>

@@ -1,20 +1,22 @@
-﻿<div class="modal fade" id="clientDeleteShareModal" tabindex="-1">
+﻿@model PixelGrid.Api.Views.Shared.Components.DeleteSharedResourceShare.DeleteSharedResourceShareModel
+
+<div class="modal fade" id="deleteShareModal" tabindex="-1">
     <div class="modal-dialog">
-        <form asp-controller="ClientSharing" asp-action="Delete" enctype="multipart/form-data" method="post">
+        <form action="@Model.Url" enctype="multipart/form-data" method="post">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Delete Share with User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <label for="deleteClientShareModalClientId" class="form-label">Client</label>
+                    <label for="deleteShareModalResourceId" class="form-label">@Model.Name</label>
                     <div class="input-group mb-3">
-                        <span class="input-group-text">Client Id</span>
-                        <input type="text" class="form-control" id="deleteClientShareModalClientId" name="resourceId" placeholder="Client Id" required="required" readonly="readonly" minlength="3">
+                        <span class="input-group-text">@Model.Name Id</span>
+                        <input type="text" class="form-control" id="deleteShareModalResourceId" name="resourceId" placeholder="@Model.Name Id" required="required" readonly="readonly" minlength="3">
                     </div>
                     <div class="input-group mb-3">
-                        <span class="input-group-text">Client Name</span>
-                        <input type="text" class="form-control" id="deleteClientShareModalClientName" placeholder="Client Name" required="required" readonly="readonly" minlength="3">
+                        <span class="input-group-text">@Model.Name Name</span>
+                        <input type="text" class="form-control" id="deleteShareModalResourceName" placeholder="@Model.Name Name" required="required" readonly="readonly" minlength="3">
                     </div>
 
                     <label for="deleteClientShareModalUserId" class="form-label">User</label>
@@ -36,18 +38,18 @@
 </div>
 
 <script>
-const deleteModal = document.getElementById('clientDeleteShareModal');
+const deleteModal = document.getElementById('deleteShareModal');
 deleteModal.addEventListener('show.bs.modal', function (event) {
     const button = event.relatedTarget;
     
-    const clientId = button.getAttribute('data-bs-clientId');
-    const clientName = button.getAttribute('data-bs-clientName');
+    const clientId = button.getAttribute('data-bs-resourceId');
+    const clientName = button.getAttribute('data-bs-resourceName');
     const userId = button.getAttribute('data-bs-userId');
     const userEmail = button.getAttribute('data-bs-userEmail');
     
     deleteModal.querySelector('.modal-title').textContent = 'Delete Share with User ' + userEmail;
-    deleteModal.querySelector('#deleteClientShareModalClientId').value = clientId;
-    deleteModal.querySelector('#deleteClientShareModalClientName').value = clientName;
+    deleteModal.querySelector('#deleteShareModalResourceId').value = clientId;
+    deleteModal.querySelector('#deleteShareModalResourceName').value = clientName;
     deleteModal.querySelector('#deleteClientShareModalUserId').value = userId;
     deleteModal.querySelector('#deleteClientShareModalUserEmail').value = userEmail;
 });

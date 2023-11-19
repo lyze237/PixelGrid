@@ -1,0 +1,39 @@
+﻿<div class="modal fade" id="projectDeleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-controller="Project" asp-action="Delete" method="get">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Id</span>
+                        <input type="text" class="form-control" id="deleteProjectModalId" name="id" placeholder="Id" required="required" readonly="readonly" minlength="3">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Name</span>
+                        <input type="text" class="form-control" id="deleteProjectModalName" name="name" placeholder="Name" required="required" readonly="readonly" minlength="3">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const deleteModal = document.getElementById('projectDeleteModal');
+deleteModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    
+    const id = button.getAttribute('data-bs-id');
+    const name = button.getAttribute('data-bs-name');
+    
+    deleteModal.querySelector('.modal-title').textContent = 'Delete Project ' + name;
+    deleteModal.querySelector('#deleteProjectModalId').value = id;
+    deleteModal.querySelector('#deleteProjectModalName').value = name;
+});
+</script>

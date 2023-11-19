@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Create a Project";
+}
+
+<h1>Create a Project</h1>
+
+<form asp-controller="Project" asp-action="Create" enctype="multipart/form-data" method="post">
+    <div class="mb-3">
+        <label for="projectName" class="form-label">Project Name</label>
+        <input type="text" class="form-control" id="projectName" name="name" placeholder="Name" required="required" minlength="3">
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>

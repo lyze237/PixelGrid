@@ -9,6 +9,9 @@
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
         </li>
         <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Project" asp-action="Index">Manage Projects</a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Client" asp-action="Index">Manage Clients</a>
         </li>
         <li class="nav-item">

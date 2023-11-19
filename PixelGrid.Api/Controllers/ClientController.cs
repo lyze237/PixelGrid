@@ -9,13 +9,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PixelGrid.Api.Data;
 using PixelGrid.Api.Options;
-using PixelGrid.Api.Views.Client.Models;
 
 namespace PixelGrid.Api.Controllers;
 
+public record ClientIndexModel(List<Client> OwnClients, List<Client> SharedClients, List<Client> PublicClients);
+
 [Authorize]
-public class ClientController(ApplicationDbContext dbContext, UserManager<User> userManager,
-    IOptions<JwtOptions> jwtOptions) : Controller
+public class ClientController(ApplicationDbContext dbContext, UserManager<User> userManager, IOptions<JwtOptions> jwtOptions) : Controller
 {
     private readonly JwtOptions jwtOptions = jwtOptions.Value;
 

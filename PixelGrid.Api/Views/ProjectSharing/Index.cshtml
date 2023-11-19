@@ -1,10 +1,10 @@
 ﻿@using PixelGrid.Api.Views.Shared.Components.DeleteSharedResourceShare
-@model PixelGrid.Api.Controllers.ShareableResourceController<PixelGrid.Api.Data.Client>.ShareableResourceIndexModel
+@model PixelGrid.Api.Controllers.ShareableResourceController<PixelGrid.Api.Data.Project>.ShareableResourceIndexModel
 @{
-    ViewData["Title"] = "Manage a Client";
+    ViewData["Title"] = "Manage a Project";
 }
 
-<h1>Manage Client @Model.Resource.Name</h1>
+<h1>Manage Project @Model.Resource.Name</h1>
 
 <h2>Shared Users</h2>
 <table class="table table-striped table-hover">
@@ -29,12 +29,12 @@
     </tbody>
 </table>
 
-<partial name="Components/DeleteSharedResourceShare/Modal" model="@(new DeleteSharedResourceShareModel("Client", Url.Action("Delete", "ClientSharing")!))" />
+<partial name="Components/DeleteSharedResourceShare/Modal" model="@(new DeleteSharedResourceShareModel("Project", Url.Action("Delete", "ProjectSharing")!))" />
 
-<h2>Share this Client with a User</h2>
+<h2>Share this Project with a User</h2>
 @if (Model.Users.Count > 0)
 {
-    <form asp-controller="ClientSharing" asp-action="Share" enctype="multipart/form-data" method="post">
+    <form asp-controller="ProjectSharing" asp-action="Share" enctype="multipart/form-data" method="post">
         <input hidden="hidden" name="resourceId" value="@Model.Resource.Id"/>
         
         <div class="input-group mb-3">
@@ -52,10 +52,10 @@
 else
 {
     <div class="alert alert-primary">
-        No more users to share this client with.
+        No more users to share this Project with.
     </div>
 }
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a class="btn btn-secondary" asp-controller="Client" asp-action="Index">Back to Clients overview</a>
+    <a class="btn btn-secondary" asp-controller="Project" asp-action="Index">Back to Projects overview</a>
 </div>
