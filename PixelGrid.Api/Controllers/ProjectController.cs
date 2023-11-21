@@ -1,16 +1,25 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using PixelGrid.Api.Data;
+using PixelGrid.Api.Filters;
+using PixelGrid.Api.Helpers;
+using PixelGrid.Api.Managers;
 
 namespace PixelGrid.Api.Controllers;
 
 public record ProjectIndexModel(List<Project> OwnProjects, List<Project> SharedProjects);
 
 [Authorize]
-public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager) : Controller
+public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager, ChunkManager chunkManager, ILogger<ProjectController> logger) : Controller
 {
+    private static readonly FormOptions DefaultFormOptions = new();
+
     public async Task<IActionResult> Index()
     {
         var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
@@ -34,17 +43,34 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(string name)
+    public async Task<IActionResult> Create(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return BadRequest($"{nameof(name)} is not set.");
-        
+
         var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
 
         dbContext.Projects.Add(new Project(name, user.Id));
         await dbContext.SaveChangesAsync();
-        
+
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return BadRequest("No id given.");
+
+        var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
+        var project = await dbContext.Projects
+            .Include(c => c.SharedWith)
+            .FirstOrDefaultAsync(c => c.Id == id && c.Owner == user);
+
+        if (project == null)
+            return BadRequest("Id not found or not owner.");
+
+        return View(project);
     }
 
     public async Task<IActionResult> Delete(string? id)
@@ -64,5 +90,24 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
         await dbContext.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
+    }
+
+    [RequestSizeLimit(10000000)]
+    [HttpPost]
+    [DisableFormValueModelBinding]
+    public async Task<IActionResult> Upload()
+    {
+        if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
+            return BadRequest("Not a valid form.");
+        
+        var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType), DefaultFormOptions.MultipartBoundaryLengthLimit);
+        var reader = new MultipartReader(boundary, HttpContext.Request.Body);
+
+        var chunk = new Chunk();
+        await chunk.Parse(reader);
+       
+        chunkManager.StoreChunk(chunk);
+
+        return Ok();
     }
 }

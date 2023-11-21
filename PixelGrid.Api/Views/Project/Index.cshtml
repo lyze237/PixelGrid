@@ -35,7 +35,7 @@
                 @foreach (var project in Model.OwnProjects)
                 {
                     <tr>
-                        <td>@project.Id</td>
+                        <td><a asp-controller="Project" asp-action="Edit" asp-route-id="@project.Id">@project.Id</a></td>
                         <td>@project.Name</td>
                         <td>@project.SharedWith.Count Users <a class="btn btn-sm btn-warning" asp-controller="ProjectSharing" asp-action="Index" asp-route-id="@project.Id">Manage</a></td>
                         <td>

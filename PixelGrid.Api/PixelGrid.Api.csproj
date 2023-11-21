@@ -20,6 +20,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
     </ItemGroup>
 
@@ -49,7 +50,6 @@
       <AdditionalFiles Include="Views\ProjectSharing\Index.cshtml" />
       <AdditionalFiles Include="Views\Project\Components\ProjectDeleteModal.cshtml" />
       <AdditionalFiles Include="Views\Project\Index.cshtml" />
-      <AdditionalFiles Include="Views\Project\Register.cshtml" />
     </ItemGroup>
 
 </Project>

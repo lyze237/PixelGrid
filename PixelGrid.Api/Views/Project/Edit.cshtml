@@ -1,0 +1,14 @@
+﻿@using PixelGrid.Api.Data
+@model Project
+
+@{
+    ViewData["Title"] = "Edit Project";
+}
+
+<h1>Edit Project @Model.Name</h1>
+
+<form asp-controller="Project" asp-action="Upload" class="dropzone" id="projectUpload">
+    <div class="fallback">
+        <input name="file" type="file" multiple />
+      </div>
+</form>
