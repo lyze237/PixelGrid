@@ -105,8 +105,20 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         var chunk = new Chunk();
         await chunk.Parse(reader);
-       
+
+        if (!chunk.ValidFileName())
+            return BadRequest("Invalid filename");
+
+        if (!chunk.ValidFilePath())
+            return BadRequest("Invalid filepath");
+        
         chunkManager.StoreChunk(chunk);
+
+        if (!chunkManager.IsValid(chunk.Uuid))
+            return BadRequest("Chunk upload received garbled data.");
+
+        if (chunkManager.IsComplete(chunk.Uuid))
+            return Ok("Completed!~");
 
         return Ok();
     }

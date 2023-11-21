@@ -28,13 +28,9 @@ public class Chunk
                 continue;
 
             if (MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
-            {
                 await ParseFileData(section.AsFileSection()!);
-            }
             else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
-            {
                 await ParseFormData(section.AsFormDataSection()!);
-            }
 
             section = await reader.ReadNextSectionAsync();
         }
@@ -86,4 +82,7 @@ public class Chunk
 
         return FileName.All(c => !invalidChars.Contains(c));
     }
+
+    public bool ValidFilePath() => 
+        string.IsNullOrWhiteSpace(FullPath) || (!FullPath.Contains("\\") && !FullPath.Contains(":"));
 }
