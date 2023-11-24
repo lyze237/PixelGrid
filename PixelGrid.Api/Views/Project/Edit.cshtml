@@ -1,15 +1,44 @@
-﻿@using PixelGrid.Api.Data
-@model Project
+﻿@model PixelGrid.Api.Controllers.ProjectEditModel
 
 @{
     ViewData["Title"] = "Edit Project";
 }
 
-<h1>Edit Project @Model.Name</h1>
+<h1>Edit Project @Model.Project.Name</h1>
 
 <form asp-controller="Project" asp-action="Upload" class="dropzone" id="projectUpload">
-    <input type="hidden" name="projectId" value="@Model.Id"/>
+    <input type="hidden" name="projectId" value="@Model.Project.Id"/>
     <div class="fallback">
         <input name="file" type="file" multiple/>
     </div>
 </form>
+
+<h2>Project Files</h2>
+@if (Model.Files.Count > 0)
+{
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var file in Model.Files)
+        {
+            <tr>
+                <td>@file</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger">Delete</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-primary">
+        You haven't uploaded any files yet.
+    </div>
+}

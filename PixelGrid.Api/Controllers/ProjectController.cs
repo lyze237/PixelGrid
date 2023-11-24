@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PixelGrid.Api.Data;
@@ -12,6 +10,8 @@ using PixelGrid.Api.Utils;
 namespace PixelGrid.Api.Controllers;
 
 public record ProjectIndexModel(List<Project> OwnProjects, List<Project> SharedProjects);
+
+public record ProjectEditModel(Project Project, List<string> Files);
 
 [Authorize]
 public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager, IOptions<FolderOptions> folderOptions, ILogger<ProjectController> logger) : Controller 
@@ -68,7 +68,16 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
         if (project == null)
             return BadRequest("Id not found or not owner.");
 
-        return View(project);
+        var files = new List<string>();
+        var folder = new DirectoryInfo(Path.Combine(folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
+        if (folder.Exists)
+        {
+            files.AddRange(folder
+                .EnumerateFiles("*.*", SearchOption.AllDirectories)
+                .Select(f => Path.GetRelativePath(folder.FullName, f.FullName)));
+        }
+        
+        return View(new ProjectEditModel(project, files));
     }
 
     public async Task<IActionResult> Delete(string? id)
