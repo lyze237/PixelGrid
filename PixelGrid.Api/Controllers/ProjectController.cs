@@ -14,10 +14,11 @@ public record ProjectIndexModel(List<Project> OwnProjects, List<Project> SharedP
 public record ProjectEditModel(Project Project, List<string> Files);
 
 [Authorize]
-public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager, IOptions<FolderOptions> folderOptions, ILogger<ProjectController> logger) : Controller 
+public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager,
+    IOptions<FolderOptions> folderOptions, ILogger<ProjectController> logger) : Controller
 {
     private readonly FolderOptions folderOptions = folderOptions.Value;
-    
+
     public async Task<IActionResult> Index()
     {
         var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
@@ -69,14 +70,15 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
             return BadRequest("Id not found or not owner.");
 
         var files = new List<string>();
-        var folder = new DirectoryInfo(Path.Combine(folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
+        var folder = new DirectoryInfo(Path.Combine(
+            folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
         if (folder.Exists)
         {
             files.AddRange(folder
                 .EnumerateFiles("*.*", SearchOption.AllDirectories)
                 .Select(f => Path.GetRelativePath(folder.FullName, f.FullName).Replace("\\", "/")));
         }
-        
+
         return View(new ProjectEditModel(project, files));
     }
 
@@ -105,7 +107,7 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
     {
         if (string.IsNullOrWhiteSpace(projectId))
             return BadRequest("No id given.");
-        
+
         var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
         var project = await dbContext.Projects
             .Include(c => c.SharedWith)
@@ -113,8 +115,9 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         if (project == null)
             return BadRequest("Id not found or not owner.");
-        
-        var folder = new DirectoryInfo(Path.Combine(folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
+
+        var folder = new DirectoryInfo(Path.Combine(
+            folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
 
         if (!file.IsValidFileName())
             return BadRequest("Invalid filename");
@@ -129,10 +132,10 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         if (!fileOnDiskDirectory.IsDirectoryInside(folder))
             return BadRequest("Nope");
-        
+
         if (!fileOnDiskDirectory.Exists)
             fileOnDiskDirectory.Create();
-        
+
         await using var fileOnDiskStream = fileOnDisk.Open(FileMode.Create);
 
         await file.CopyToAsync(fileOnDiskStream);
@@ -142,16 +145,20 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
     public async Task<IActionResult> DeleteFile(string id, string fileName)
     {
-        if (string.IsNullOrWhiteSpace(id))
+        if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(fileName))
             return BadRequest("No id given.");
-        
+
         var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
         var project = await dbContext.Projects
             .Include(c => c.SharedWith)
             .FirstOrDefaultAsync(c => c.Id == id && c.Owner == user);
         
-        var folder = new DirectoryInfo(Path.Combine(folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
-        
+        if (project == null)
+            return BadRequest("Id not found or not owner.");
+
+        var folder = new DirectoryInfo(Path.Combine(
+            folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
+
         if (!FileUtils.IsValidFileName(Path.GetFileName(fileName)))
             return BadRequest("Invalid filename");
 
@@ -168,9 +175,45 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         if (!fileOnDisk.Exists)
             return BadRequest("File doesn't exist");
-        
+
         fileOnDisk.Delete();
+
+        return RedirectToAction(nameof(Edit), new {id});
+    }
+
+    public async Task<IActionResult> DownloadFile(string id, string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(fileName))
+            return BadRequest("No id given.");
+
+        var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
+        var project = await dbContext.Projects
+            .Include(c => c.SharedWith)
+            .FirstOrDefaultAsync(c => c.Id == id && c.Owner == user);
         
-        return RedirectToAction(nameof(Edit), new { id });
+        if (project == null)
+            return BadRequest("Id not found or not owner.");
+
+        var folder = new DirectoryInfo(Path.Combine(
+            folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
+
+        if (!FileUtils.IsValidFileName(Path.GetFileName(fileName)))
+            return BadRequest("Invalid filename");
+
+        if (!FileUtils.IsValidRelativeFolderPath(fileName))
+            return BadRequest("Invalid path");
+
+        var fileOnDisk = new FileInfo(Path.Combine(folder.FullName, fileName));
+        var fileOnDiskDirectory = fileOnDisk.Directory;
+        if (fileOnDiskDirectory == null)
+            return BadRequest("Unknown directory");
+
+        if (!fileOnDiskDirectory.IsDirectoryInside(folder))
+            return BadRequest("Nope");
+
+        if (!fileOnDisk.Exists)
+            return BadRequest("File doesn't exist");
+
+        return File(fileOnDisk.OpenRead(), "application/octet-stream", fileOnDisk.Name);
     }
 }

@@ -27,7 +27,7 @@
         @foreach (var file in Model.Files)
         {
             <tr>
-                <td>@file</td>
+                <td><a asp-controller="Project" asp-action="DownloadFile" asp-route-id="@Model.Project.Id" asp-route-fileName="@file" target="_blank">@file</a></td>
                 <td>
                     <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#projectDeleteFileModal" data-bs-id="@Model.Project.Id" data-bs-name="@Model.Project.Name" data-bs-fileName="@file">Delete</button>
                 </td>
