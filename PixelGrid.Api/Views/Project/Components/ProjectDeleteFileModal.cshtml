@@ -1,0 +1,45 @@
+﻿<div class="modal fade" id="projectDeleteFileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-controller="Project" asp-action="DeleteFile" method="get">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Project File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Id</span>
+                        <input type="text" class="form-control" id="deleteProjectModalId" name="id" placeholder="Id" required="required" readonly="readonly" minlength="3">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Name</span>
+                        <input type="text" class="form-control" id="deleteProjectModalName" name="name" placeholder="Name" required="required" readonly="readonly" minlength="3">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Filename</span>
+                        <input type="text" class="form-control" id="deleteProjectModalFilename" name="fileName" placeholder="Filename" required="required" readonly="readonly" minlength="3">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const deleteModal = document.getElementById('projectDeleteFileModal');
+deleteModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    
+    const id = button.getAttribute('data-bs-id');
+    const name = button.getAttribute('data-bs-name');
+    const fileName = button.getAttribute('data-bs-fileName');
+    
+    deleteModal.querySelector('.modal-title').textContent = 'Delete Project File ' + name;
+    deleteModal.querySelector('#deleteProjectModalId').value = id;
+    deleteModal.querySelector('#deleteProjectModalName').value = name;
+    deleteModal.querySelector('#deleteProjectModalFilename').value = fileName;
+});
+</script>

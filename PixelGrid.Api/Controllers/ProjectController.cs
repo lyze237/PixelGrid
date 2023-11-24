@@ -74,7 +74,7 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
         {
             files.AddRange(folder
                 .EnumerateFiles("*.*", SearchOption.AllDirectories)
-                .Select(f => Path.GetRelativePath(folder.FullName, f.FullName)));
+                .Select(f => Path.GetRelativePath(folder.FullName, f.FullName).Replace("\\", "/")));
         }
         
         return View(new ProjectEditModel(project, files));
@@ -138,5 +138,39 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
         await file.CopyToAsync(fileOnDiskStream);
 
         return Ok();
+    }
+
+    public async Task<IActionResult> DeleteFile(string id, string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return BadRequest("No id given.");
+        
+        var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
+        var project = await dbContext.Projects
+            .Include(c => c.SharedWith)
+            .FirstOrDefaultAsync(c => c.Id == id && c.Owner == user);
+        
+        var folder = new DirectoryInfo(Path.Combine(folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
+        
+        if (!FileUtils.IsValidFileName(Path.GetFileName(fileName)))
+            return BadRequest("Invalid filename");
+
+        if (!FileUtils.IsValidRelativeFolderPath(fileName))
+            return BadRequest("Invalid path");
+
+        var fileOnDisk = new FileInfo(Path.Combine(folder.FullName, fileName));
+        var fileOnDiskDirectory = fileOnDisk.Directory;
+        if (fileOnDiskDirectory == null)
+            return BadRequest("Unknown directory");
+
+        if (!fileOnDiskDirectory.IsDirectoryInside(folder))
+            return BadRequest("Nope");
+
+        if (!fileOnDisk.Exists)
+            return BadRequest("File doesn't exist");
+        
+        fileOnDisk.Delete();
+        
+        return RedirectToAction(nameof(Edit), new { id });
     }
 }

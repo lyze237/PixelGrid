@@ -29,7 +29,7 @@
             <tr>
                 <td>@file</td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-danger">Delete</button>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#projectDeleteFileModal" data-bs-id="@Model.Project.Id" data-bs-name="@Model.Project.Name" data-bs-fileName="@file">Delete</button>
                 </td>
             </tr>
         }
@@ -42,3 +42,6 @@ else
         You haven't uploaded any files yet.
     </div>
 }
+
+
+<partial name="Components/ProjectDeleteFileModal"/>
