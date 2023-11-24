@@ -27,6 +27,7 @@
                 <tr>
                     <th>@nameof(Project.Id)</th>
                     <th>@nameof(Project.Name)</th>
+                    <th>Filesize</th>
                     <th>Shared with</th>
                     <th>Delete</th>
                 </tr>
@@ -37,6 +38,7 @@
                     <tr>
                         <td><a asp-controller="Project" asp-action="Edit" asp-route-id="@project.Id">@project.Id</a></td>
                         <td>@project.Name</td>
+                        <td>@File.GetBytesReadable(project.Files.Sum(f => f.Size))</td>
                         <td>@project.SharedWith.Count Users <a class="btn btn-sm btn-warning" asp-controller="ProjectSharing" asp-action="Index" asp-route-id="@project.Id">Manage</a></td>
                         <td>
                             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#projectDeleteModal" data-bs-id="@project.Id" data-bs-name="@project.Name">Delete</button>
@@ -70,6 +72,7 @@
                 <tr>
                     <th>@nameof(Project.Id)</th>
                     <th>@nameof(Project.Name)</th>
+                    <th>Filesize</th>
                     <th>@nameof(Project.Owner)</th>
                 </tr>
                 </thead>
@@ -79,6 +82,7 @@
                     <tr>
                         <td>@project.Id</td>
                         <td>@project.Name</td>
+                        <td>@File.GetBytesReadable(project.Files.Sum(f => f.Size))</td>
                         <td>@project.Owner.UserName</td>
                     </tr>
                 }

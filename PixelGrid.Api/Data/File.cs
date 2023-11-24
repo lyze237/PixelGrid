@@ -20,9 +20,12 @@ public class File(string projectId, string path, long size)
      
     // https://www.somacon.com/p576.php
     public string GetBytesReadable()
+        => GetBytesReadable(Size);
+
+    public static string GetBytesReadable(long size)
     {
         // Get absolute value
-        var absoluteSize = Size < 0 ? -Size : Size;
+        var absoluteSize = size < 0 ? -size : size;
         // Determine the suffix and readable value
         string suffix;
         double readable;
@@ -31,35 +34,35 @@ public class File(string projectId, string path, long size)
             // Exabyte
             case >= 0x1000000000000000:
                 suffix = "EB";
-                readable = Size >> 50;
+                readable = size >> 50;
                 break;
             // Petabyte
             case >= 0x4000000000000:
                 suffix = "PB";
-                readable = Size >> 40;
+                readable = size >> 40;
                 break;
             // Terabyte
             case >= 0x10000000000:
                 suffix = "TB";
-                readable = Size >> 30;
+                readable = size >> 30;
                 break;
             // Gigabyte
             case >= 0x40000000:
                 suffix = "GB";
-                readable = Size >> 20;
+                readable = size >> 20;
                 break;
             // Megabyte
             case >= 0x100000:
                 suffix = "MB";
-                readable = Size >> 10;
+                readable = size >> 10;
                 break;
             // Kilobyte
             case >= 0x400:
                 suffix = "KB";
-                readable = Size;
+                readable = size;
                 break;
             default:
-                return Size.ToString("0 B"); // Byte
+                return size.ToString("0 B"); // Byte
         }
         
         // Divide by 1024 to get fractional value

@@ -24,10 +24,12 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         var model = new ProjectIndexModel(
             await dbContext.Projects
+                .Include(p => p.Files)
                 .Include(c => c.SharedWith)
                 .Where(c => c.Owner == user)
                 .ToListAsync(),
             await dbContext.Projects
+                .Include(p => p.Files)
                 .Include(c => c.Owner)
                 .Where(c => c.SharedWith.Contains(user))
                 .ToListAsync()
