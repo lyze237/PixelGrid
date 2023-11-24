@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Data.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,16 +7,14 @@ using Microsoft.Extensions.Options;
 using PixelGrid.Api.Data;
 using PixelGrid.Api.Options;
 using PixelGrid.Api.Utils;
+using File = PixelGrid.Api.Data.File;
 
 namespace PixelGrid.Api.Controllers;
 
 public record ProjectIndexModel(List<Project> OwnProjects, List<Project> SharedProjects);
 
-public record ProjectEditModel(Project Project, List<string> Files);
-
 [Authorize]
-public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager,
-    IOptions<FolderOptions> folderOptions, ILogger<ProjectController> logger) : Controller
+public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager, IOptions<FolderOptions> folderOptions, ILogger<ProjectController> logger) : Controller
 {
     private readonly FolderOptions folderOptions = folderOptions.Value;
 
@@ -63,23 +62,14 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
         var project = await dbContext.Projects
+            .Include(c => c.Files)
             .Include(c => c.SharedWith)
             .FirstOrDefaultAsync(c => c.Id == id && c.Owner == user);
 
         if (project == null)
             return BadRequest("Id not found or not owner.");
 
-        var files = new List<string>();
-        var folder = new DirectoryInfo(Path.Combine(
-            folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
-        if (folder.Exists)
-        {
-            files.AddRange(folder
-                .EnumerateFiles("*.*", SearchOption.AllDirectories)
-                .Select(f => Path.GetRelativePath(folder.FullName, f.FullName).Replace("\\", "/")));
-        }
-
-        return View(new ProjectEditModel(project, files));
+        return View(project);
     }
 
     public async Task<IActionResult> Delete(string? id)
@@ -140,6 +130,13 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         await file.CopyToAsync(fileOnDiskStream);
 
+        var dbFile = await dbContext.Files.FirstOrDefaultAsync(f => f.Path == dzfullpath);
+        if (dbFile == null)
+            dbContext.Files.Add(new File(project.Id, dzfullpath, fileOnDisk.Length));
+        else
+            dbFile.UpdateFileSize(fileOnDisk.Length);
+        await dbContext.SaveChangesAsync();
+
         return Ok();
     }
 
@@ -176,7 +173,13 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
         if (!fileOnDisk.Exists)
             return BadRequest("File doesn't exist");
 
+        var dbFile = await dbContext.Files.FirstOrDefaultAsync(f => f.Path == fileName);
+        if (dbFile == null)
+            return BadRequest("Invalid db file");
         fileOnDisk.Delete();
+        
+        dbContext.Files.Remove(dbFile);
+        await dbContext.SaveChangesAsync();
 
         return RedirectToAction(nameof(Edit), new {id});
     }
@@ -213,6 +216,10 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         if (!fileOnDisk.Exists)
             return BadRequest("File doesn't exist");
+        
+        var dbFile = await dbContext.Files.FirstOrDefaultAsync(f => f.Path == fileName);
+        if (dbFile == null)
+            return BadRequest("Invalid db file");
 
         return File(fileOnDisk.OpenRead(), "application/octet-stream", fileOnDisk.Name);
     }

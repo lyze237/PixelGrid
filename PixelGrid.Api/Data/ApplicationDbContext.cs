@@ -8,7 +8,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<BlendFile> BlendFiles => Set<BlendFile>();
     public DbSet<Project> Projects => Set<Project>();
-
+    public DbSet<File> Files => Set<File>();
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
