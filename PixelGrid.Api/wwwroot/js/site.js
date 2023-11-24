@@ -16,7 +16,7 @@ Dropzone.options.projectUpload = {
     init: function() {
         const dropzone = this;
         
-        dropzone.on("sending", (file, xhr, data) => {
+        dropzone.on("sending", function(file, xhr, data) {
             console.log(file.fullPath);
             if (file.fullPath) {
                 data.append("dzfullpath", file.fullPath);
@@ -26,6 +26,11 @@ Dropzone.options.projectUpload = {
         dropzone.on("complete", function(file) {
             if (file.status === "success")
                 dropzone.removeFile(file);
+        });
+
+        dropzone.on("queuecomplete", function() {
+            if (dropzone.files.length === 0)
+                location.reload();
         });
         
         /*
