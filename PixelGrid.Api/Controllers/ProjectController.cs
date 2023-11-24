@@ -118,7 +118,10 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
             return BadRequest("Chunk upload received garbled data.");
 
         if (chunkManager.IsComplete(chunk.Uuid))
+        {
+            await chunkManager.Save(@"C:\\temp\\uploads", chunk.Uuid);
             return Ok("Completed!~");
+        }
 
         return Ok();
     }

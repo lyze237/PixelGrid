@@ -23,7 +23,8 @@ public class Chunk
         var section = await reader.ReadNextSectionAsync();
         while (section != null)
         {
-            var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
+            var hasContentDispositionHeader =
+                ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
             if (!hasContentDispositionHeader)
                 continue;
 
@@ -40,7 +41,7 @@ public class Chunk
     {
         using var memory = new MemoryStream();
         await file.FileStream!.CopyToAsync(memory);
-        
+
         FileName = file.FileName;
         Bytes = memory.ToArray();
     }
@@ -83,6 +84,10 @@ public class Chunk
         return FileName.All(c => !invalidChars.Contains(c));
     }
 
-    public bool ValidFilePath() => 
+    public bool ValidFilePath() =>
         string.IsNullOrWhiteSpace(FullPath) || (!FullPath.Contains("\\") && !FullPath.Contains(":"));
+
+    public bool SameMetadata(Chunk other) =>
+        Uuid == other.Uuid && TotalFileSize == other.TotalFileSize && ChunkSize == other.ChunkSize &&
+        TotalChunkCount == other.TotalChunkCount && FullPath == other.FullPath && FileName == other.FileName;
 }

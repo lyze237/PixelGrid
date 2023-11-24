@@ -10,19 +10,48 @@ document.querySelectorAll(".dselect").forEach(e => dselect(e, {
 Dropzone.options.projectUpload = {
     withCredentials: true,
     parallelUploads: 5,
+    parallelChunkUploads: true,
     chunking: true,
     retryChunks: true,
-    maxFilesize: 5000000000,
+    maxFilesize: 5000,
     chunkSize: 2000000,
+    forceChunking: true,
+    clickable: false,
     init: function() {
-        this.on("addedfile", file => {
-            console.log("A file has been added");
-        });
+        const dropzone = this;
         
-        this.on("sending", (file, xhr, data) => {
-            if(file.fullPath) {
+        dropzone.on("sending", (file, xhr, data) => {
+            if (file.fullPath) {
                 data.append("dzfullpath", file.fullPath);
             }
         });
+
+        dropzone.on("complete", function(file) {
+            if (file.status === "success")
+                dropzone.removeFile(file);
+        });
+        
+        /*
+        if (isFolderDialogSupported()) {
+            let dropzone = document.querySelector('.dz-hidden-input');
+            dropzone.setAttribute('directory', 'true');
+            dropzone.setAttribute('webkitdirectory', 'true');
+            dropzone.setAttribute('mozdirectory', 'true');
+            dropzone.setAttribute('msdirectory', 'true');
+            dropzone.setAttribute('odirectory', 'true');
+        }
+         */
     }
+};
+
+
+const isFolderDialogSupported = () => {
+    const tmpInput = document.createElement('input');
+    return ('webkitdirectory' in tmpInput
+        || 'mozdirectory' in tmpInput
+        || 'odirectory' in tmpInput
+        || 'msdirectory' in tmpInput
+        || 'directory' in tmpInput
+        || false
+    );
 };
