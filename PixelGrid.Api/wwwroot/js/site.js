@@ -10,17 +10,14 @@ document.querySelectorAll(".dselect").forEach(e => dselect(e, {
 Dropzone.options.projectUpload = {
     withCredentials: true,
     parallelUploads: 5,
-    parallelChunkUploads: true,
-    chunking: true,
-    retryChunks: true,
+    chunking: false,
     maxFilesize: 5000,
-    chunkSize: 2000000,
-    forceChunking: true,
     clickable: false,
     init: function() {
         const dropzone = this;
         
         dropzone.on("sending", (file, xhr, data) => {
+            console.log(file.fullPath);
             if (file.fullPath) {
                 data.append("dzfullpath", file.fullPath);
             }

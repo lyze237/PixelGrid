@@ -1,25 +1,23 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Net.Http.Headers;
+using Microsoft.Extensions.Options;
 using PixelGrid.Api.Data;
-using PixelGrid.Api.Filters;
-using PixelGrid.Api.Helpers;
-using PixelGrid.Api.Managers;
+using PixelGrid.Api.Options;
+using PixelGrid.Api.Utils;
 
 namespace PixelGrid.Api.Controllers;
 
 public record ProjectIndexModel(List<Project> OwnProjects, List<Project> SharedProjects);
 
 [Authorize]
-public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager, ChunkManager chunkManager, ILogger<ProjectController> logger) : Controller
+public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager, IOptions<FolderOptions> folderOptions, ILogger<ProjectController> logger) : Controller 
 {
-    private static readonly FormOptions DefaultFormOptions = new();
-
+    private readonly FolderOptions folderOptions = folderOptions.Value;
+    
     public async Task<IActionResult> Index()
     {
         var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
@@ -92,36 +90,43 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
         return RedirectToAction(nameof(Index));
     }
 
-    [RequestSizeLimit(10000000)]
+    [RequestSizeLimit(5000000000)]
     [HttpPost]
-    [DisableFormValueModelBinding]
-    public async Task<IActionResult> Upload()
+    public async Task<IActionResult> Upload(IFormFile file, [FromForm] string dzfullpath, [FromForm] string projectId)
     {
-        if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
-            return BadRequest("Not a valid form.");
+        if (string.IsNullOrWhiteSpace(projectId))
+            return BadRequest("No id given.");
         
-        var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType), DefaultFormOptions.MultipartBoundaryLengthLimit);
-        var reader = new MultipartReader(boundary, HttpContext.Request.Body);
+        var user = await userManager.GetUserAsync(User) ?? throw new ArgumentException("User is null?");
+        var project = await dbContext.Projects
+            .Include(c => c.SharedWith)
+            .FirstOrDefaultAsync(c => c.Id == projectId && c.Owner == user);
 
-        var chunk = new Chunk();
-        await chunk.Parse(reader);
+        if (project == null)
+            return BadRequest("Id not found or not owner.");
+        
+        var folder = new DirectoryInfo(Path.Combine(folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
 
-        if (!chunk.ValidFileName())
+        if (!file.IsValidFileName())
             return BadRequest("Invalid filename");
 
-        if (!chunk.ValidFilePath())
-            return BadRequest("Invalid filepath");
+        if (!FileUtils.IsValidRelativeFolderPath(dzfullpath))
+            return BadRequest("Invalid path");
+
+        var fileOnDisk = new FileInfo(Path.Combine(folder.FullName, dzfullpath));
+        var fileOnDiskDirectory = fileOnDisk.Directory;
+        if (fileOnDiskDirectory == null)
+            return BadRequest("Unknown directory");
+
+        if (!fileOnDiskDirectory.IsDirectoryInside(folder))
+            return BadRequest("Nope");
         
-        chunkManager.StoreChunk(chunk);
+        if (!fileOnDiskDirectory.Exists)
+            fileOnDiskDirectory.Create();
+        
+        await using var fileOnDiskStream = fileOnDisk.Open(FileMode.Create);
 
-        if (!chunkManager.IsValid(chunk.Uuid))
-            return BadRequest("Chunk upload received garbled data.");
-
-        if (chunkManager.IsComplete(chunk.Uuid))
-        {
-            await chunkManager.Save(@"C:\\temp\\uploads", chunk.Uuid);
-            return Ok("Completed!~");
-        }
+        await file.CopyToAsync(fileOnDiskStream);
 
         return Ok();
     }

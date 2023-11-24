@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PixelGrid.Api.Data;
 using PixelGrid.Api.Hubs;
-using PixelGrid.Api.Managers;
 using PixelGrid.Api.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +19,7 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<FolderOptions>(builder.Configuration.GetSection("Folders"));
 
 builder.Services.AddAuthentication()
     .AddJwtBearer(options =>
@@ -57,8 +57,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 
 builder.Services.AddMemoryCache();
-
-builder.Services.AddSingleton<ChunkManager>();
 
 var app = builder.Build();
 
