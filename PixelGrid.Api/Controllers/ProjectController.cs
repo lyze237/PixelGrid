@@ -1,10 +1,15 @@
 ﻿using System.Data.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using PixelGrid.Api.Data;
+using PixelGrid.Api.Helpers;
+using PixelGrid.Api.Managers;
 using PixelGrid.Api.Options;
 using PixelGrid.Api.Utils;
 using File = PixelGrid.Api.Data.File;
@@ -14,7 +19,7 @@ namespace PixelGrid.Api.Controllers;
 public record ProjectIndexModel(List<Project> OwnProjects, List<Project> SharedProjects);
 
 [Authorize]
-public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager, IOptions<FolderOptions> folderOptions, ILogger<ProjectController> logger) : Controller
+public class ProjectController(ApplicationDbContext dbContext, UserManager<User> userManager, IOptions<FolderOptions> folderOptions, ChunkManager chunkManager, ILogger<ProjectController> logger) : Controller
 {
     private readonly FolderOptions folderOptions = folderOptions.Value;
 
@@ -92,10 +97,12 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
 
         return RedirectToAction(nameof(Index));
     }
-
-    [RequestSizeLimit(5000000000)]
+    
+    
+    
+    [RequestSizeLimit(10000000)]
     [HttpPost]
-    public async Task<IActionResult> Upload(IFormFile file, [FromForm] string dzfullpath, [FromForm] string projectId)
+    public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromForm] string? dzfullpath, [FromForm] string dzuuid, [FromForm] ulong dzchunkindex, [FromForm] ulong dztotalfilesize, [FromForm] ulong dzchunksize, [FromForm] ulong dztotalchunkcount, [FromForm] ulong dzchunkbyteoffset, [FromForm] string projectId)
     {
         if (string.IsNullOrWhiteSpace(projectId))
             return BadRequest("No id given.");
@@ -104,40 +111,37 @@ public class ProjectController(ApplicationDbContext dbContext, UserManager<User>
         var project = await dbContext.Projects
             .Include(c => c.SharedWith)
             .FirstOrDefaultAsync(c => c.Id == projectId && c.Owner == user);
-
+        
         if (project == null)
             return BadRequest("Id not found or not owner.");
 
-        var folder = new DirectoryInfo(Path.Combine(
-            folderOptions.ProjectsDirectory ?? throw new ArgumentException("No Project Directory is set"), project.Id));
+        var chunk = new Chunk(dzuuid, dzchunkindex, dztotalfilesize, dzchunksize, dztotalchunkcount, dzchunkbyteoffset, dzfullpath, file.FileName);
+        logger.LogInformation("Saving chunk: {chunk}", chunk);
 
-        if (!file.IsValidFileName())
+        if (!chunk.ValidFileName())
             return BadRequest("Invalid filename");
 
-        if (!FileUtils.IsValidRelativeFolderPath(dzfullpath))
-            return BadRequest("Invalid path");
+        if (!chunk.ValidFilePath())
+            return BadRequest("Invalid filepath");
+        
+        await chunkManager.StoreChunk(chunk, file);
 
-        var fileOnDisk = new FileInfo(Path.Combine(folder.FullName, dzfullpath));
-        var fileOnDiskDirectory = fileOnDisk.Directory;
-        if (fileOnDiskDirectory == null)
-            return BadRequest("Unknown directory");
+        if (!chunkManager.IsValid(chunk.Uuid))
+            return BadRequest("Chunk upload received garbled data.");
+        
+        if (chunkManager.IsComplete(chunk.Uuid))
+        {
+            var fileSize = await chunkManager.Save(project, chunk.Uuid);
 
-        if (!fileOnDiskDirectory.IsDirectoryInside(folder))
-            return BadRequest("Nope");
-
-        if (!fileOnDiskDirectory.Exists)
-            fileOnDiskDirectory.Create();
-
-        await using var fileOnDiskStream = fileOnDisk.Open(FileMode.Create);
-
-        await file.CopyToAsync(fileOnDiskStream);
-
-        var dbFile = await dbContext.Files.FirstOrDefaultAsync(f => f.Path == dzfullpath);
-        if (dbFile == null)
-            dbContext.Files.Add(new File(project.Id, dzfullpath, fileOnDisk.Length));
-        else
-            dbFile.UpdateFileSize(fileOnDisk.Length);
-        await dbContext.SaveChangesAsync();
+            var dbFile = await dbContext.Files.FirstOrDefaultAsync(f => f.Path == dzfullpath);
+            if (dbFile == null)
+                dbContext.Files.Add(new File(project.Id, chunk.FullPath ?? chunk.FileName, fileSize));
+            else
+                dbFile.UpdateFileSize(fileSize);
+            await dbContext.SaveChangesAsync();
+                
+            return Ok("Completed!~");
+        }
 
         return Ok();
     }

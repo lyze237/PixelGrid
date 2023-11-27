@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PixelGrid.Api.Data;
 using PixelGrid.Api.Hubs;
+using PixelGrid.Api.Managers;
 using PixelGrid.Api.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,8 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
+
+builder.Services.AddSingleton<ChunkManager>();
 
 builder.Services.AddMemoryCache();
 

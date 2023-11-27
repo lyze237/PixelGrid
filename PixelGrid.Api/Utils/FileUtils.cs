@@ -27,6 +27,9 @@ public static class FileUtils
 
     public static bool IsDirectoryInside(this DirectoryInfo path, DirectoryInfo dir)
     {
+        if (string.Equals(path.FullName, dir.FullName, StringComparison.InvariantCultureIgnoreCase)) 
+            return true;
+            
         while (true)
         {
             if (path.Parent == null) 

@@ -10,8 +10,12 @@ document.querySelectorAll(".dselect").forEach(e => dselect(e, {
 Dropzone.options.projectUpload = {
     withCredentials: true,
     parallelUploads: 5,
-    chunking: false,
+    parallelChunkUploads: true,
+    chunking: true,
+    retryChunks: true,
     maxFilesize: 5000,
+    chunkSize: 2000000,
+    forceChunking: true,
     clickable: false,
     init: function() {
         const dropzone = this;
