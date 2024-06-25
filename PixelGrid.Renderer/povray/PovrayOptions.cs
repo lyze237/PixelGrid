@@ -47,6 +47,7 @@ public class PovrayOptions : Options
             $"+W{Width}",
             $"+H{Height}",
             $"+F{RenderFormat.GetEnumValue()}",
+            UseBorder ? $"+SC{BorderMinX} +SR{BorderMinY} +EC{BorderMaxX} +ER{BorderMaxY}" : "",
             $"+O{outputDirectory.Replace("\\", "/")}/{outputFilename}",
             "+V",
             "-D"

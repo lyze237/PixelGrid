@@ -15,11 +15,10 @@ public class OfflineWorker(ILogger<OfflineWorker> logger) : BackgroundService
         var outputFolder = "export";
 
         const string outputFile = "Output.png";
-        
+
         var manager = new RenderManager();
-        manager.Render("povray", folder, file, outputFolder, outputFile, new PovrayOptions
-        {
-            
-        }, new StdoutCallback());
+        manager.Render("povray", folder, file, outputFolder, outputFile, 
+            new PovrayOptions(),
+            new StdoutCallback());
     }
 }
