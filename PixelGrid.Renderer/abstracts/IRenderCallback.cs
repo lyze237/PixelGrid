@@ -6,6 +6,6 @@ public interface IRenderCallback
     void OnProgress(CallbackStatus status);
     void OnWarning(string warning);
     void OnError(string error);
-    void OnCompleted();
+    void OnCompleted(int processExitCode);
     void OnLog(string line);
 }

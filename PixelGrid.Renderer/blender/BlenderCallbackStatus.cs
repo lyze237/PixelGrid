@@ -4,6 +4,8 @@ namespace PixelGrid.Renderer.blender;
 
 public class BlenderCallbackStatus : CallbackStatus
 {
+    public int? Frame { get; set; }
+        
     public int? CurrentSample { get; set; }
     public int? TotalSamples { get; set; }
 

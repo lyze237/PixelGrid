@@ -7,7 +7,7 @@ public class BlenderOptions(Engine engine) : Options
 {
     public Engine Engine { get; private set; } = engine;
     public int Threads { get; set; } = 0; // 0 for processor count
-    public RenderFormat RenderFormat { get; set; } = RenderFormat.Png;
+    public BlenderRenderFormat RenderFormat { get; set; } = BlenderRenderFormat.Png;
     public string? Scene { get; set; } = null;
 
     public string[] BuildCommandLineOptions(string filename, string outputDirectory)
@@ -58,7 +58,7 @@ public class CyclesBlenderOptions() : BlenderOptions(Engine.Cycles)
     public CyclesDevice Device { get; set; } = CyclesDevice.Cpu;
 }
 
-public enum RenderFormat
+public enum BlenderRenderFormat
 {
     [EnumMember(Value = "TGA")] Tga,
     [EnumMember(Value = "RAWTGA")] RawTga,

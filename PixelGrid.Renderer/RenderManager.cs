@@ -16,6 +16,6 @@ public class RenderManager
     {
     }
 
-    public void Render(string name, string workingDirectory, string filename, string outputDirectory, Options options, IRenderCallback callback) => 
-        RegisteredRenderers[name].Render(workingDirectory, filename, outputDirectory, options, callback);
+    public void Render(string name, string workingDirectory, string filename, string outputDirectory, string outputFilename, Options options, IRenderCallback callback) => 
+        RegisteredRenderers[name].Render(workingDirectory, filename, outputDirectory, outputFilename, options, callback);
 }

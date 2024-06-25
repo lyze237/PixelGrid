@@ -1,11 +1,18 @@
+using System.Globalization;
+using System.Runtime.Serialization;
 using PixelGrid.Renderer.abstracts;
+using PixelGrid.Renderer.blender;
 
 namespace PixelGrid.Renderer.povray;
 
 public class PovrayOptions : Options
 {
-    public bool AntiAliasing { get; set; } = true;
+    // https://wiki.povray.org/content/Reference:Tracing_Options#Quality_Settings
+    public float? AntiAliasingTreshold { get; set; } = 0.3f;
     public RadiosityOptions Radiosity { get; set; } = new();
+    public PovrayRenderFormat RenderFormat { get; set; } = PovrayRenderFormat.Png;
+    public int Quality { get; set; } = 9; // 0 - 11
+    public int? RenderThreads { get; set; }
 
     public class RadiosityOptions
     {
@@ -26,4 +33,36 @@ public class PovrayOptions : Options
 
         public float AdcBailout { get; set; } = 0.1f;
     }
+
+    public List<string> BuildCommandLineOptions(string filename, string outputDirectory, string outputFilename)
+    {
+        var args = new List<string>
+        {
+            filename,
+            RenderThreads != null ? $"+WT{RenderThreads}" : "",
+            $"+Q{Quality}",
+            AntiAliasingTreshold == null
+                ? "-A"
+                : $"+A{string.Format(CultureInfo.GetCultureInfo("en-us"), "{0:0.#}", AntiAliasingTreshold)}",
+            $"+W{Width}",
+            $"+H{Height}",
+            $"+F{RenderFormat.GetEnumValue()}",
+            $"+O{outputDirectory.Replace("\\", "/")}/{outputFilename}",
+            "+V",
+            "-D"
+        };
+
+        return args;
+    }
+}
+public enum PovrayRenderFormat
+{
+    [EnumMember(Value = "B")] Bitmap,
+    [EnumMember(Value = "C")] CTarga24,
+    [EnumMember(Value = "E")] OpenExrHdr,
+    [EnumMember(Value = "H")] RadianceHdr,
+    [EnumMember(Value = "J")] Jpeg,
+    [EnumMember(Value = "N")] Png,
+    [EnumMember(Value = "P")] Ppm,
+    [EnumMember(Value = "T")] UTarga24
 }

@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Threading.Channels;
-using System.Xml;
 using PixelGrid.Renderer.abstracts;
 using PixelGrid.Renderer.Extensions;
 
@@ -9,11 +7,11 @@ namespace PixelGrid.Renderer.blender;
 
 public partial class BlenderRenderer : IRenderer
 {
-    public void Render(string workingDirectory, string filename, string outputDirectory, Options options,
+    public void Render(string workingDirectory, string filename, string outputDirectory, string outputFilename, Options options,
         IRenderCallback callback)
     {
         if (options is not BlenderOptions blenderOptions)
-            throw new ArgumentException("The options need to be of type BlenderOptions in a Blender render",
+            throw new ArgumentException($"The options need to be of type {nameof(BlenderOptions)} in a Blender render",
                 nameof(options));
 
         const string exe = @"C:\Program Files\Blender Foundation\Blender 4.0\blender.exe";
@@ -39,17 +37,14 @@ public partial class BlenderRenderer : IRenderer
         process.BeginOutputReadLine();
 
         process.WaitForExit();
-        callback.OnCompleted();
+        callback.OnCompleted(process.ExitCode);
     }
 
     private static void ParseBlenderOutput(string? line, IRenderCallback callback)
     {
         if (line == null)
             return;
-
-        var isInitializing = line.Split("|").Contains("Initializing");
-        var match = FramePattern().Match(line.Trim());
-
+        
         callback.OnLog(line);
 
         if (line.Trim().StartsWith("WARN"))
@@ -58,30 +53,34 @@ public partial class BlenderRenderer : IRenderer
         if (line.Trim().StartsWith("EXCEPTION"))
             callback.OnError(line);
 
+        var isInitializing = line.Split("|").Contains("Initializing");
+        
         if (isInitializing)
             callback.OnStart();
+        
+        var match = FramePattern().Match(line.Trim());
 
-        if (match.Success)
+        if (!match.Success) 
+            return;
+        
+        var frame = match.Groups["frame"].Value.ToInt();
+        var sample = match.Groups["sample"].Value.ToInt();
+        var totalSample = match.Groups["totalSample"].Value.ToInt();
+
+        var memory = match.Groups["memory"].Value.ToFloat();
+        var peakMemory = match.Groups["peak"].Value.ToFloat();
+
+        var remaining = match.Groups["remaining"].Value;
+
+        callback.OnProgress(new BlenderCallbackStatus
         {
-            var frame = match.Groups["frame"].Value.ToInt();
-            var sample = match.Groups["sample"].Value.ToInt();
-            var totalSample = match.Groups["totalSample"].Value.ToInt();
-
-            var memory = match.Groups["memory"].Value.ToFloat();
-            var peakMemory = match.Groups["peak"].Value.ToFloat();
-
-            var remaining = match.Groups["remaining"].Value;
-
-            callback.OnProgress(new BlenderCallbackStatus
-            {
-                Frame = frame,
-                CurrentSample = sample,
-                TotalSamples = totalSample,
-                MemoryUsage = memory,
-                PeakMemoryUsage = peakMemory,
-                RemainingTime = remaining
-            });
-        }
+            Frame = frame,
+            CurrentSample = sample,
+            TotalSamples = totalSample,
+            MemoryUsage = memory,
+            PeakMemoryUsage = peakMemory,
+            RemainingTime = remaining
+        });
     }
 
 

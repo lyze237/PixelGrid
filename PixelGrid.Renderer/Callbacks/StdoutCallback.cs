@@ -1,11 +1,12 @@
 using PixelGrid.Renderer.abstracts;
 using PixelGrid.Renderer.blender;
+using PixelGrid.Renderer.povray;
 
 namespace PixelGrid.Renderer.Callbacks;
 
 public class StdoutCallback : IRenderCallback
 {
-    public void OnStart() => 
+    public void OnStart() =>
         Console.WriteLine("[Callback] Render Started");
 
     public void OnProgress(CallbackStatus status)
@@ -14,22 +15,20 @@ public class StdoutCallback : IRenderCallback
         {
             BlenderCallbackStatus blenderStatus =>
                 $"Frame: {blenderStatus.Frame}, Sample {blenderStatus.CurrentSample} / {blenderStatus.TotalSamples}, Memory: {blenderStatus.MemoryUsage} / {blenderStatus.PeakMemoryUsage}, Remaining Time: {blenderStatus.RemainingTime}",
-            _ => $"Frame: {status.Frame}"
+            PovrayCallbackStatus povrayStatus => $"Pixel: {povrayStatus.CurrentPixel} / {povrayStatus.TotalPixels}",
+            _ => throw new ArgumentException($"Missing {nameof(CallbackStatus)} implementation", nameof(status))
         });
     }
 
-    public void OnWarning(string warning) => 
+    public void OnWarning(string warning) =>
         Console.WriteLine($"[Callback] Warning: {warning}");
 
-    public void OnError(string error) => 
+    public void OnError(string error) =>
         Console.WriteLine($"[Callback] Error: {error}");
 
-    public void OnProgress(int frame, int samples, int totalSamples) => 
-        Console.WriteLine($"[Callback] Render update {frame}: {samples} / {totalSamples}");
-
-    public void OnCompleted() => 
+    public void OnCompleted(int processExitCode) =>
         Console.WriteLine("[Callback] Render Completed");
 
-    public void OnLog(string line) => 
+    public void OnLog(string line) =>
         Console.Error.WriteLine($"[Callback] {line}");
 }
