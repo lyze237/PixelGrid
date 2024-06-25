@@ -1,6 +1,14 @@
-@PixelGrid.Server_HostAddress = http://localhost:5249
+@PixelGrid.Server_HostAddress = grpcs://localhost:7232
 
-GET {{PixelGrid.Server_HostAddress}}/weatherforecast/
-Accept: application/json
+###
+
+GRPC {{PixelGrid.Server_HostAddress}}/Auth/Register
+
+{
+  "userName": "Test",
+  "email": "cool@example.com",
+  "password": "Password123!"
+}
+
 
 ###

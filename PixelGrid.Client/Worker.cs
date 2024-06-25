@@ -48,14 +48,14 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
     {
         var channel = GrpcChannel.ForAddress("https://localhost:7232/");
         var client = new Auth.AuthClient(channel);
-        await client.RegisterAsync(new RegisterRequest
-            {UserName = "lyze", Email = "test@example.com", Password = "Password123!"});
+        await client.RegisterAsync(new AuthRegisterRequest
+            {UserName = "test", Email = "test@example.com", Password = "Password123!"});
     }
 
-    private async Task<LoginResponse> Login()
+    private async Task<AuthLoginResponse> Login()
     {
         var channel = GrpcChannel.ForAddress("https://localhost:7232/");
         var client = new Auth.AuthClient(channel);
-        return await client.LoginAsync(new LoginRequest {Email = "test@example.com", Password = "Password123!"});
+        return await client.LoginAsync(new AuthLoginRequest {Email = "test@example.com", Password = "Password123!"});
     }
 }

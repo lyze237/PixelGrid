@@ -7,7 +7,7 @@ namespace PixelGrid.Server.Controllers;
 
 public class AuthController(IJwtService jwtService, UserManager<User> userManager, RoleManager<Role> roleManager, ILogger<AuthController> logger) : Auth.AuthBase
 {
-    public override async Task<RegisterResponse> Register(RegisterRequest request, ServerCallContext context)
+    public override async Task<AuthRegisterResponse> Register(AuthRegisterRequest request, ServerCallContext context)
     {
         if (await roleManager.FindByNameAsync("Role") == null)
         {
@@ -32,27 +32,27 @@ public class AuthController(IJwtService jwtService, UserManager<User> userManage
             var user = await userManager.FindByEmailAsync(request.Email);
             await userManager.AddToRoleAsync(user, "Test");
             
-            return new RegisterResponse { Success = true };
+            return new AuthRegisterResponse { Success = true };
         }
 
         logger.LogError("Failed to create user: {errors}", string.Join(", ", result.Errors.Select(e => $"{e.Code} {e.Description}")));
-        return new RegisterResponse { Success = false };
+        return new AuthRegisterResponse { Success = false };
     }
 
-    public override async Task<LoginResponse> Login(LoginRequest request, ServerCallContext context)
+    public override async Task<AuthLoginResponse> Login(AuthLoginRequest request, ServerCallContext context)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user == null)
-            return new LoginResponse {Success = false};
+            return new AuthLoginResponse {Success = false};
 
         var result = await userManager.CheckPasswordAsync(user, request.Password);
         if (result)
-            return new LoginResponse
+            return new AuthLoginResponse
             {
                 Success = true,
                 Token = await jwtService.GenerateTokenAsync(user)
             };
         
-        return new LoginResponse {Success = false};
+        return new AuthLoginResponse {Success = false};
     }
 }

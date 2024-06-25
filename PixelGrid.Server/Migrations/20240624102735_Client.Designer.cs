@@ -11,8 +11,8 @@ using PixelGrid.Server.Db;
 namespace PixelGrid.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240620113308_Init")]
-    partial class Init
+    [Migration("20240624102735_Client")]
+    partial class Client
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -120,6 +120,31 @@ namespace PixelGrid.Server.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("PixelGrid.Server.Db.Client", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Connected")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("LastConnected")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("PixelGrid.Server.Db.Role", b =>

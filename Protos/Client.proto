@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+service Client {
+  rpc Register(ClientRegisterRequest) returns (ClientRegisterResponse) {
+    option (google.api.http) = {
+      post: "/v1/Client/Register"
+    };
+  }
+}
+
+message ClientRegisterRequest {
+  string name = 1;
+}
+
+message ClientRegisterResponse {
+  bool success = 1;
+  string token = 2;
+}

@@ -1,26 +1,36 @@
 syntax = "proto3";
 
+import "google/api/annotations.proto";
+
 service Auth {
-  rpc Register(RegisterRequest) returns (RegisterResponse);
-  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Register(AuthRegisterRequest) returns (AuthRegisterResponse) {
+    option (google.api.http) = {
+      post: "/v1/Auth/Register"
+    };
+  }
+  rpc Login(AuthLoginRequest) returns (AuthLoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/Auth/Login"
+    };
+  }
 }
 
-message LoginRequest {
+message AuthLoginRequest {
   string email = 1;
   string password = 2;
 }
 
-message LoginResponse {
+message AuthLoginResponse {
   bool success = 1;
   optional string token = 2;
 }
 
-message RegisterRequest {
+message AuthRegisterRequest {
   string userName = 1;
   string email = 2;
   string password = 3;
 }
 
-message RegisterResponse {
+message AuthRegisterResponse {
   bool success = 1;
 }
