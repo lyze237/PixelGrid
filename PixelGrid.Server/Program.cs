@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PixelGrid.Server.Configurations;
+using PixelGrid.Server.Controllers;
 using PixelGrid.Server.Db;
 using PixelGrid.Server.Hubs;
 using PixelGrid.Server.Options;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var jwtOptions = new JwtOptions();
 builder.Configuration.Bind("jwt", jwtOptions);
 
+builder.Services.AddGrpc();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddJwtAuthentication(jwtOptions);
 builder.Services.AddSignalR();
@@ -31,15 +33,7 @@ app.UseCors(options => options.AllowAnyOrigin());
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/token", (IServiceProvider provider) =>
-{
-    var scope = provider.CreateScope();
-    var jwt = scope.ServiceProvider.GetRequiredService<IJwtService>();
-    return jwt.GenerateTokenAsync();
-})
-.WithName("GetToken")
-.WithOpenApi();
-
+app.MapGrpcService<AuthController>();
 app.MapHub<ChatHub>("/hubs/chat");
 
 app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();

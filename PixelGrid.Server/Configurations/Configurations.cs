@@ -26,6 +26,8 @@ public static class Configurations
         services.AddIdentityCore<User>()
             .AddRoles<Role>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        services.Configure<IdentityOptions>(options => options.User.RequireUniqueEmail = true);
         
         services.AddAuthentication(options =>
         {

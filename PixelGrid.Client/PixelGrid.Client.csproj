@@ -9,6 +9,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Protobuf Include="../Protos/Auth.proto" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Google.Protobuf" Version="3.27.1" />
+        <PackageReference Include="Grpc.Net.Client" Version="2.63.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.64.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.6" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
     </ItemGroup>
