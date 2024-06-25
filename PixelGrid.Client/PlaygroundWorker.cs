@@ -1,10 +1,9 @@
-using System.Diagnostics.Eventing.Reader;
 using Grpc.Net.Client;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace PixelGrid.Client;
 
-public class Worker(ILogger<Worker> logger) : BackgroundService
+public class PlaygroundWorker(ILogger<PlaygroundWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
