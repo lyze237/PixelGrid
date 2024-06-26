@@ -2,7 +2,7 @@ using PixelGrid.Server.Domain.Entities;
 
 namespace PixelGrid.Server.Domain.Repositories;
 
-public interface IClientRepository : IGenericRepository<Client, long>
+public interface IClientRepository : IGenericRepository<ClientEntity, long>
 {
     
 }

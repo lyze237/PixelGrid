@@ -1,23 +1,12 @@
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
-using PixelGrid.Database;
-using PixelGrid.Server.Domain;
+using PixelGrid.Server.Services;
 
 namespace PixelGrid.Server.Controllers;
 
-public class ClientController(ApplicationDbContext dbContext, ILogger<ClientController> logger) : Client.ClientBase
+public class ClientController(ClientService clientService, ILogger<ClientController> logger) : Client.ClientBase
 {
     [Authorize]
-    public override async Task<ClientRegisterResponse> Register(ClientRegisterRequest request, ServerCallContext context)
-    {
-        logger.LogInformation("Registering client {name}", request.Name);
-
-        var client = dbContext.Clients.Add(Domain.Entities.Client.CreateClient(request.Name));
-        await dbContext.SaveChangesAsync();
-
-        return new ClientRegisterResponse { 
-            Success = true,
-            Token = client.Entity.Token
-        };
-    }
+    public override async Task<ClientRegisterResponse> Register(ClientRegisterRequest request, ServerCallContext context) => 
+        await clientService.Register(request);
 }

@@ -4,7 +4,7 @@ using PixelGrid.Server.Domain.Repositories;
 
 namespace PixelGrid.Server.Infra.Repositories;
 
-public class DbClientRepository(ApplicationDbContext dbContext) : GenericRepository<Client, long>(dbContext), IClientRepository
+public class DbClientRepository(ApplicationDbContext dbContext) : GenericRepository<ClientEntity, long>(dbContext), IClientRepository
 {
     
 }

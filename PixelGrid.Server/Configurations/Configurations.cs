@@ -1,15 +1,12 @@
 using System.Text;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PixelGrid.Database;
+using Microsoft.OpenApi.Models;
 using PixelGrid.Server.Domain;
 using PixelGrid.Server.Domain.Entities;
 using PixelGrid.Server.Options;
-using PixelGrid.Server.Services.Jwt;
 
 namespace PixelGrid.Server.Configurations;
 
@@ -17,20 +14,57 @@ public static class Configurations
 {
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not set");
+        var connectionString = configuration.GetConnectionString("DefaultConnection") ??
+                               throw new InvalidOperationException("Connection string 'DefaultConnection' not set");
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
+    }
+
+    public static void AddSwaggerWithGrpc(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddGrpcSwagger();
+        services.AddSwaggerGen(config =>
+        {
+            var filePath = Path.Combine(AppContext.BaseDirectory, "PixelGrid.Server.xml");
+            config.IncludeXmlComments(filePath);
+            config.IncludeGrpcXmlComments(filePath, includeControllerXmlComments: true);
+
+            config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Enter token",
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "bearer"
+            });
+
+            config.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
+        });
     }
 
     public static void AddJwtAuthentication(this IServiceCollection services, JwtOptions jwtOptions)
     {
         services.AddAuthorizationBuilder();
 
-        services.AddIdentityCore<User>()
-            .AddRoles<Role>()
+        services.AddIdentityCore<UserEntity>()
+            .AddRoles<RoleEntity>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.Configure<IdentityOptions>(options => options.User.RequireUniqueEmail = true);
-        
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,7 +74,7 @@ public static class Configurations
             options.Authority = jwtOptions.Authority;
             options.Audience = jwtOptions.Audience;
             options.RequireHttpsMetadata = false;
-            
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -63,18 +97,16 @@ public static class Configurations
 
                     return Task.CompletedTask;
                 },
-                
+
                 OnAuthenticationFailed = context =>
                 {
                     if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                         context.Response.Headers.Append("Token-Expired", "true");
-                    
+
                     return Task.CompletedTask;
                 }
             };
         });
-        
-        services.AddScoped<IJwtService,JwtService>();
     }
 
     public static void AddSettings(this IServiceCollection services, IConfiguration configuration)

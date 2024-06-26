@@ -4,7 +4,7 @@ using PixelGrid.Server.Domain.Entities;
 
 namespace PixelGrid.Server.Domain;
 
-public class ApplicationDbContext (DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User, Role, string>(options)
+public class ApplicationDbContext (DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<UserEntity, RoleEntity, string>(options)
 {
-    public DbSet<Client> Clients { get; set; }
+    public DbSet<ClientEntity> Clients { get; set; }
 }

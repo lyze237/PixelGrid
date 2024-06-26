@@ -15,7 +15,8 @@ builder.Services.AddKeyedTransient<IRenderer, BlenderRenderer>(RenderType.Blende
 builder.Services.AddKeyedTransient<IRenderer, PovrayRenderer>(RenderType.Povray);
 
 //builder.Services.AddHostedService<PlaygroundWorker>();
-builder.Services.AddHostedService<OfflineWorker>();
+//builder.Services.AddHostedService<OfflineWorker>();
+builder.Services.AddHostedService<ConnectionWorker>();
 
 var host = builder.Build();
 host.Run();

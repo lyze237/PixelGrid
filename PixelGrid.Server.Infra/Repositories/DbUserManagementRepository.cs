@@ -6,11 +6,11 @@ using PixelGrid.Server.Infra.Exceptions;
 
 namespace PixelGrid.Server.Infra.Repositories;
 
-public class DbUserManagementRepository(UserManager<User> userManager, RoleManager<Role> roleManager) : IUserManagementRepository
+public class DbUserManagementRepository(UserManager<UserEntity> userManager, RoleManager<RoleEntity> roleManager) : IUserManagementRepository
 {
-    public async Task<User> CreateUserAsync(string username, string email, string password)
+    public async Task<UserEntity> CreateUserAsync(string username, string email, string password)
     {
-        var user = new User
+        var user = new UserEntity
         {
             UserName = username,
             Email = email
@@ -23,11 +23,11 @@ public class DbUserManagementRepository(UserManager<User> userManager, RoleManag
         throw new CreateUserException("Couldn't create user", result.Errors);
     }
 
-    public async Task<User> CheckUserPasswordAsync(string email, string password)
+    public async Task<UserEntity> CheckUserPasswordAsync(string email, string password)
     {
         var user = await FindUserByEmailAsync(email);
         if (user == null)
-            throw new EntityNotFoundException<User>("Couldn't find user by email");
+            throw new EntityNotFoundException<UserEntity>("Couldn't find user by email");
 
         if (await userManager.CheckPasswordAsync(user, password))
             return user;
@@ -35,6 +35,6 @@ public class DbUserManagementRepository(UserManager<User> userManager, RoleManag
         throw new InvalidCredentialException();
     }
 
-    public async Task<User?> FindUserByEmailAsync(string email) => 
+    public async Task<UserEntity?> FindUserByEmailAsync(string email) => 
         await userManager.FindByEmailAsync(email);
 }

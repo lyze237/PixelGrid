@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Server.Infra", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Server.Domain", "PixelGrid.Server.Domain\PixelGrid.Server.Domain.csproj", "{D4ED28AB-9427-4F8C-8877-64034C46F350}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Shared", "PixelGrid.Shared\PixelGrid.Shared.csproj", "{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{D4ED28AB-9427-4F8C-8877-64034C46F350}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4ED28AB-9427-4F8C-8877-64034C46F350}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4ED28AB-9427-4F8C-8877-64034C46F350}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

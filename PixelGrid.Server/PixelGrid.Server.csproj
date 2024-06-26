@@ -36,6 +36,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\PixelGrid.Server.Infra\PixelGrid.Server.Infra.csproj" />
+      <ProjectReference Include="..\PixelGrid.Shared\PixelGrid.Shared.csproj" />
     </ItemGroup>
 
 </Project>
