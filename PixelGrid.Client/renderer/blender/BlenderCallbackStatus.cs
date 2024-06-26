@@ -1,6 +1,6 @@
-using PixelGrid.Renderer.abstracts;
+using PixelGrid.Client.renderer.abstracts;
 
-namespace PixelGrid.Renderer.blender;
+namespace PixelGrid.Client.renderer.blender;
 
 public class BlenderCallbackStatus : CallbackStatus
 {

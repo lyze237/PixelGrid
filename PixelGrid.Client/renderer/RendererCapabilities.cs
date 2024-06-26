@@ -1,4 +1,4 @@
-namespace PixelGrid.Renderer;
+namespace PixelGrid.Client.renderer;
 
 [Flags]
 public enum RendererCapabilities

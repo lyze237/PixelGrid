@@ -31,8 +31,4 @@
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\PixelGrid.Renderer\PixelGrid.Renderer.csproj" />
-    </ItemGroup>
 </Project>

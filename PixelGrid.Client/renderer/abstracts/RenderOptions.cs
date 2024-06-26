@@ -1,6 +1,6 @@
-namespace PixelGrid.Renderer.abstracts;
+namespace PixelGrid.Client.renderer.abstracts;
 
-public abstract class Options
+public abstract class RenderOptions
 {
     public int Width { get; set; } = 1920;
     public int Height { get; set; } = 1080;

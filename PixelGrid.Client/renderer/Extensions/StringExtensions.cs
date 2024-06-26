@@ -1,4 +1,4 @@
-namespace PixelGrid.Renderer.Extensions;
+namespace PixelGrid.Client.renderer.Extensions;
 
 public static class StringExtensions
 {

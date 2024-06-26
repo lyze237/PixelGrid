@@ -1,6 +1,6 @@
-using PixelGrid.Renderer.abstracts;
+using PixelGrid.Client.renderer.abstracts;
 
-namespace PixelGrid.Renderer.povray;
+namespace PixelGrid.Client.renderer.povray;
 
 public class PovrayCallbackStatus : CallbackStatus
 {

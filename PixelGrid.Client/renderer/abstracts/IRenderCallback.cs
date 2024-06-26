@@ -1,4 +1,4 @@
-namespace PixelGrid.Renderer.abstracts;
+namespace PixelGrid.Client.renderer.abstracts;
 
 public interface IRenderCallback
 {

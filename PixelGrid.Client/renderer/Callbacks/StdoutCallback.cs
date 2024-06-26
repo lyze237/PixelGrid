@@ -1,8 +1,8 @@
-using PixelGrid.Renderer.abstracts;
-using PixelGrid.Renderer.blender;
-using PixelGrid.Renderer.povray;
+using PixelGrid.Client.renderer.abstracts;
+using PixelGrid.Client.renderer.blender;
+using PixelGrid.Client.renderer.povray;
 
-namespace PixelGrid.Renderer.Callbacks;
+namespace PixelGrid.Client.renderer.Callbacks;
 
 public class StdoutCallback : IRenderCallback
 {

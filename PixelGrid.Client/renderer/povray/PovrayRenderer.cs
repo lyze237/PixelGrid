@@ -1,31 +1,32 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using PixelGrid.Renderer.abstracts;
-using PixelGrid.Renderer.Extensions;
+using PixelGrid.Client.renderer.abstracts;
+using PixelGrid.Client.renderer.Extensions;
 
-namespace PixelGrid.Renderer.povray;
+namespace PixelGrid.Client.renderer.povray;
 
 public partial class PovrayRenderer : IRenderer
 {
-    public void Render(string workingDirectory, string filename, string outputDirectory, string outputFilename, Options options, IRenderCallback callback)
+    public string ExePath { get; set; }
+
+    public void Render(string workingDirectory, string filename, string outputDirectory, string outputFilename, RenderOptions options, IRenderCallback callback)
     {
         if (options is not PovrayOptions povrayOptions)
             throw new ArgumentException($"The options need to be of type {nameof(PovrayOptions)} in a Povray render",
                 nameof(options));
         
-        var exe = "povray";
         var args = povrayOptions.BuildCommandLineOptions(filename, outputDirectory, outputFilename);
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            exe = "wsl";
-            args.Insert(0, "povray");
+            args.Insert(0, ExePath);
+            ExePath = "wsl";
         }
 
-        Console.WriteLine($"Starting: {exe} {string.Join(", ", args)}");
+        Console.WriteLine($"Starting: {ExePath} {string.Join(", ", args)}");
 
-        var startInfo = new ProcessStartInfo(exe)
+        var startInfo = new ProcessStartInfo(ExePath)
         {
             WorkingDirectory = workingDirectory,
             UseShellExecute = false,

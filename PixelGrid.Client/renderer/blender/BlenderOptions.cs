@@ -1,9 +1,9 @@
 using System.Runtime.Serialization;
-using PixelGrid.Renderer.abstracts;
+using PixelGrid.Client.renderer.abstracts;
 
-namespace PixelGrid.Renderer.blender;
+namespace PixelGrid.Client.renderer.blender;
 
-public class BlenderOptions(Engine engine) : Options
+public class BlenderOptions(Engine engine) : RenderOptions
 {
     public Engine Engine { get; private set; } = engine;
     public int Threads { get; set; } = 0; // 0 for processor count

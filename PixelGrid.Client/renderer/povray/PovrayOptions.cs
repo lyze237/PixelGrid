@@ -1,11 +1,11 @@
 using System.Globalization;
 using System.Runtime.Serialization;
-using PixelGrid.Renderer.abstracts;
-using PixelGrid.Renderer.blender;
+using PixelGrid.Client.renderer.abstracts;
+using PixelGrid.Client.renderer.blender;
 
-namespace PixelGrid.Renderer.povray;
+namespace PixelGrid.Client.renderer.povray;
 
-public class PovrayOptions : Options
+public class PovrayOptions : RenderOptions
 {
     // https://wiki.povray.org/content/Reference:Tracing_Options#Quality_Settings
     public float? AntiAliasingTreshold { get; set; } = 0.3f;

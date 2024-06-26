@@ -1,25 +1,25 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using PixelGrid.Renderer.abstracts;
-using PixelGrid.Renderer.Extensions;
+using PixelGrid.Client.renderer.abstracts;
+using PixelGrid.Client.renderer.Extensions;
 
-namespace PixelGrid.Renderer.blender;
+namespace PixelGrid.Client.renderer.blender;
 
 public partial class BlenderRenderer : IRenderer
 {
-    public void Render(string workingDirectory, string filename, string outputDirectory, string outputFilename, Options options,
+    public string ExePath { get; set; }
+
+    public void Render(string workingDirectory, string filename, string outputDirectory, string outputFilename, RenderOptions options,
         IRenderCallback callback)
     {
         if (options is not BlenderOptions blenderOptions)
             throw new ArgumentException($"The options need to be of type {nameof(BlenderOptions)} in a Blender render",
                 nameof(options));
 
-        const string exe = @"C:\Users\lyze\AppData\Roaming\BlenderInstalls\stable\blender-3.6.12-lts.626a6b1c6799\blender.exe";
-
         var args = blenderOptions.BuildCommandLineOptions(filename, outputDirectory, outputFilename);
-        Console.WriteLine($"Starting: {exe} {string.Join(", ", args)}");
+        Console.WriteLine($"Starting: {ExePath} {string.Join(", ", args)}");
 
-        var startInfo = new ProcessStartInfo(exe)
+        var startInfo = new ProcessStartInfo(ExePath)
         {
             WorkingDirectory = workingDirectory,
             UseShellExecute = false,
