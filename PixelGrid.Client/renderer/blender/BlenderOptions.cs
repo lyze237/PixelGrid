@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using PixelGrid.Client.renderer.abstracts;
+using PixelGrid.Client.renderer.exceptions;
 
 namespace PixelGrid.Client.renderer.blender;
 
@@ -10,7 +11,7 @@ public class BlenderOptions(Engine engine) : RenderOptions
     public BlenderRenderFormat RenderFormat { get; set; } = BlenderRenderFormat.Png;
     public string? Scene { get; set; } = null;
 
-    public string[] BuildCommandLineOptions(string filename, string outputDirectory, string outputFilename)
+    public virtual List<string> BuildCommandLineOptions(string filename, string outputDirectory, string outputFilename)
     {
         var args = new List<string>
         {
@@ -23,15 +24,13 @@ public class BlenderOptions(Engine engine) : RenderOptions
             $"{(Path.IsPathRooted(outputDirectory) ? "" : "//")}{outputDirectory}/{Path.GetFileNameWithoutExtension(outputFilename)}",
 
             "-E",
-            Engine.GetEnumValue() ?? throw new ArgumentException("Enum does not have an EnumMember Attribute",
-                nameof(Engine)),
+            Engine.GetEnumValue() ?? throw new OptionsException("Unknown enum", nameof(Engine)),
 
             "-t",
             Threads.ToString(),
 
             "-F",
-            RenderFormat.GetEnumValue() ??
-            throw new ArgumentException("Enum does not have an EnumMember Attribute", nameof(RenderFormat)),
+            RenderFormat.GetEnumValue() ?? throw new OptionsException("Unknown", nameof(RenderFormat)),
         };
 
         if (Scene != null)
@@ -40,39 +39,44 @@ public class BlenderOptions(Engine engine) : RenderOptions
         if (Border != null)
         {
             args.Add("--python-expr");
-            args.Add(string.Join("\n", [
+            args.Add(string.Join("\n", new List<string>
+            {
                 "import bpy",
                 "for scene in bpy.data.scenes:",
-                 "    scene.render.use_border = True",
+                "    scene.render.use_border = True",
                 $"    scene.render.border_min_x = {Border.BorderMinX}",
                 $"    scene.render.border_min_y = {Border.BorderMinY}",
                 $"    scene.render.border_max_x = {Border.BorderMaxX}",
                 $"    scene.render.border_max_y = {Border.BorderMaxY}",
-            ]));
+            }));
         }
 
         args.AddRange(Animation != null
             ? new[] { "-s", Animation.StartFrame.ToString(), "-e", Animation.EndFrame.ToString(), "-a" }
             : ["-f", Frame.ToString()]);
 
-        if (this is CyclesBlenderOptions cyclesOptions)
-        {
-            args.AddRange(new[]
-            {
-                "--",
-                "--cycles-device",
-                cyclesOptions.Device.GetEnumValue() ??
-                throw new ArgumentException("Enum does not have an EnumMember Attribute", nameof(cyclesOptions.Device)),
-            });
-        }
-
-        return args.ToArray();
+        return args;
     }
 }
 
 public class CyclesBlenderOptions() : BlenderOptions(Engine.Cycles)
 {
     public CyclesDevice Device { get; set; } = CyclesDevice.Cpu;
+
+    public override List<string> BuildCommandLineOptions(string filename, string outputDirectory, string outputFilename)
+    {
+        var args = base.BuildCommandLineOptions(filename, outputDirectory, outputFilename);
+
+        args.AddRange(new[]
+        {
+            "--",
+            "--cycles-device",
+            Device.GetEnumValue() ??
+            throw new OptionsException("Unknown enum", nameof(Device)),
+        });
+
+        return args;
+    }
 }
 
 public enum BlenderRenderFormat

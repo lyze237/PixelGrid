@@ -10,7 +10,7 @@ public class RenderHub(ILogger<RenderHub> logger) : Hub<IRenderHub.IClient>, IRe
 {
     public async Task ClientToServer(string message)
     {
-        logger.LogInformation("Received {message} from client", message);
+        logger.LogInformation("Received {Message} from client", message);
         await Clients.All.ServerToClient($"Pong {message}");
     }
 }

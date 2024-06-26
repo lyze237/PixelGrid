@@ -6,20 +6,20 @@ public class UserManagementService(JwtService jwtService, IUserManagementReposit
 {
     public async Task<AuthRegisterResponse> Register(AuthRegisterRequest request)
     {
-        logger.LogInformation("Creating user {username}", request.UserName);
+        logger.LogInformation("Creating user {Username}", request.UserName);
 
         await userManagement.CreateUserAsync(request.UserName, request.Email, request.Password);
-        logger.LogInformation("Created user {username}", request.UserName);
+        logger.LogInformation("Created user {Username}", request.UserName);
 
         return new AuthRegisterResponse { Success = true };
     }
     
     public async Task<AuthLoginResponse> Login(AuthLoginRequest request)
     {
-        logger.LogInformation("User {email} tries to login", request.Email);
+        logger.LogInformation("User {Email} tries to login", request.Email);
 
         var user = await userManagement.CheckUserPasswordAsync(request.Email, request.Password);
-        logger.LogInformation("User {email} logged in successfully", request.Email);
+        logger.LogInformation("User {Email} logged in successfully", request.Email);
 
         var token = await jwtService.GenerateUserTokenAsync(user);
 

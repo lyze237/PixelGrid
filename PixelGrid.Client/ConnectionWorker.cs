@@ -19,14 +19,14 @@ public class ConnectionWorker(IOptions<RendererOptions> rendererOptions, ILogger
             .Build();
 
         connection.Closed += async error => logger.LogError(error, "Connection closed");
-        connection.Reconnected += async msg => logger.LogInformation("Reconnected {msg}", msg);
+        connection.Reconnected += async msg => logger.LogInformation("Reconnected {Msg}", msg);
         connection.Reconnecting += async error => logger.LogError(error, "Reconnecting");
 
         connection.On<string, string>("ReceiveMessage",
-            (user, message) => { logger.LogInformation("{user}: {message}", user, message); });
+            (user, message) => { logger.LogInformation("{User}: {Message}", user, message); });
 
         await connection.StartAsync(stoppingToken);
-        logger.LogInformation("Connection state is {state}", connection.State);
+        logger.LogInformation("Connection state is {State}", connection.State);
         return connection;
     }
 

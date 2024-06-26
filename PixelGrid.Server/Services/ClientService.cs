@@ -7,7 +7,7 @@ public class ClientService(JwtService jwtService, ApplicationDbContext dbContext
 {
     public async Task<ClientRegisterResponse> Register(ClientRegisterRequest request)
     {
-        logger.LogInformation("Registering client {name}", request.Name);
+        logger.LogInformation("Registering client {Name}", request.Name);
 
         var client = dbContext.Clients.Add(ClientEntity.CreateClient(request.Name));
         await dbContext.SaveChangesAsync();

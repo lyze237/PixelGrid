@@ -1,5 +1,5 @@
 namespace PixelGrid.Client.renderer.abstracts;
 
-public class CallbackStatus
+public abstract class CallbackStatus
 {
 }
