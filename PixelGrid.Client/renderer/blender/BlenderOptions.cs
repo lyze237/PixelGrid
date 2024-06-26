@@ -30,7 +30,7 @@ public class BlenderOptions(Engine engine) : RenderOptions
             Threads.ToString(),
 
             "-F",
-            RenderFormat.GetEnumValue() ?? throw new OptionsException("Unknown", nameof(RenderFormat)),
+            RenderFormat.GetEnumValue() ?? throw new OptionsException("Unknown", nameof(RenderFormat))
         };
 
         if (Scene != null)
@@ -47,7 +47,7 @@ public class BlenderOptions(Engine engine) : RenderOptions
                 $"    scene.render.border_min_x = {Border.BorderMinX}",
                 $"    scene.render.border_min_y = {Border.BorderMinY}",
                 $"    scene.render.border_max_x = {Border.BorderMaxX}",
-                $"    scene.render.border_max_y = {Border.BorderMaxY}",
+                $"    scene.render.border_max_y = {Border.BorderMaxY}"
             }));
         }
 
@@ -72,7 +72,7 @@ public class CyclesBlenderOptions() : BlenderOptions(Engine.Cycles)
             "--",
             "--cycles-device",
             Device.GetEnumValue() ??
-            throw new OptionsException("Unknown enum", nameof(Device)),
+            throw new OptionsException("Unknown enum", nameof(Device))
         });
 
         return args;

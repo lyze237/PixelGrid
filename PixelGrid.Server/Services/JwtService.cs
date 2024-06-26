@@ -9,8 +9,16 @@ using PixelGrid.Server.Options;
 
 namespace PixelGrid.Server.Services;
 
+/// <summary>
+/// Service for generating and managing JSON Web Tokens (JWT).
+/// </summary>
 public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions> options)
 {
+    /// <summary>
+    /// Generates a JSON Web Token (JWT) for the given user entity.
+    /// </summary>
+    /// <param name="userEntity">The user entity for which to generate the token.</param>
+    /// <returns>The generated JWT token string.</returns>
     public async Task<string> GenerateUserTokenAsync(UserEntity userEntity)
     {
         var roles = await userManager.GetRolesAsync(userEntity);
@@ -18,7 +26,7 @@ public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, userEntity.Id),
-            new(ClaimTypes.Name, userEntity.UserName),
+            new(ClaimTypes.Name, userEntity.UserName!)
         };
 
         claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
@@ -34,13 +42,18 @@ public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions
 
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }
-    
-    public async Task<string> GenerateClientTokenAsync(ClientEntity client)
+
+    /// <summary>
+    /// Generates a JSON Web Token (JWT) for the given client entity.
+    /// </summary>
+    /// <param name="client">The client entity for which to generate the token.</param>
+    /// <returns>The generated JWT token string.</returns>
+    public Task<string> GenerateClientTokenAsync(ClientEntity client)
     {
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, client.Id.ToString()),
-            new(ClaimTypes.Actor, client.Token),
+            new(ClaimTypes.Actor, client.Token)
         };
 
         var securityToken = new JwtSecurityTokenHandler().CreateToken(new SecurityTokenDescriptor
@@ -52,6 +65,6 @@ public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Value.Key)), SecurityAlgorithms.HmacSha256Signature)
         });
 
-        return new JwtSecurityTokenHandler().WriteToken(securityToken);
+        return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(securityToken));
     }
 }

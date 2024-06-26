@@ -35,7 +35,7 @@ app.UseAuthorization();
 
 app.MapGrpcService<AuthController>();
 app.MapGrpcService<ClientController>();
-app.MapHub<ChatHub>("/hubs/chat");
+
 app.MapHub<RenderHub>("/hubs/render");
 
 app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();

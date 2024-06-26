@@ -21,6 +21,9 @@ exclude:
     paths:
       - PixelGrid.Server.Domain/Migrations
 
+dotnet: 
+  solution: Pixelgrid.sln
+
 #Execute shell command before Qodana execution (Applied in CI/CD pipeline)
 #bootstrap: sh ./prepare-qodana.sh
 

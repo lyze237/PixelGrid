@@ -18,9 +18,21 @@ public class ConnectionWorker(IOptions<RendererOptions> rendererOptions, ILogger
             .WithAutomaticReconnect()
             .Build();
 
-        connection.Closed += async error => logger.LogError(error, "Connection closed");
-        connection.Reconnected += async msg => logger.LogInformation("Reconnected {Msg}", msg);
-        connection.Reconnecting += async error => logger.LogError(error, "Reconnecting");
+        connection.Closed += error =>
+        {
+            logger.LogError(error, "Connection closed");
+            return Task.CompletedTask;
+        };
+        connection.Reconnected += msg =>
+        {
+            logger.LogInformation("Reconnected {Msg}", msg);
+            return Task.CompletedTask;
+        };
+        connection.Reconnecting += error =>
+        {
+            logger.LogError(error, "Reconnecting");
+            return Task.CompletedTask;
+        };
 
         connection.On<string, string>("ReceiveMessage",
             (user, message) => { logger.LogInformation("{User}: {Message}", user, message); });

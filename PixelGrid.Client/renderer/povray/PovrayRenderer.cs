@@ -30,7 +30,7 @@ public partial class PovrayRenderer : IRenderer
         {
             WorkingDirectory = workingDirectory,
             UseShellExecute = false,
-            RedirectStandardError = true,
+            RedirectStandardError = true
             
         };
         args.ToList().ForEach(arg => startInfo.ArgumentList.Add(arg)); // why
@@ -51,7 +51,7 @@ public partial class PovrayRenderer : IRenderer
     public RendererCapabilities GetCapabilities() =>
         RendererCapabilities.Frame | RendererCapabilities.Border;
 
-    private void ParsePovrayOutput(string? line, IRenderCallback callback)
+    private static void ParsePovrayOutput(string? line, IRenderCallback callback)
     {
         if (line == null)
             return;

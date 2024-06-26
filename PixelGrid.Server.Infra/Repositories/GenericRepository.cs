@@ -41,12 +41,13 @@ public class GenericRepository<TEntity, TId>(ApplicationDbContext dbContext) : I
         await RemoveAsync(entity);
     }
 
-    public async Task RemoveAsync(TEntity entity)
+    public Task RemoveAsync(TEntity entity)
     {
         if (dbSet.Entry(entity).State == EntityState.Detached)
             dbSet.Attach(entity);
 
         dbSet.Remove(entity);
+        return Task.CompletedTask;
     }
 
     public async Task SaveAsync() => 

@@ -10,8 +10,17 @@ using PixelGrid.Server.Options;
 
 namespace PixelGrid.Server.Configurations;
 
+/// <summary>
+/// Provides extension methods for configuring various options in the application.
+/// </summary>
 public static class Configurations
 {
+    /// <summary>
+    /// Adds the database configuration to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the connection string 'DefaultConnection' is not set.</exception>
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection") ??
@@ -19,6 +28,11 @@ public static class Configurations
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
     }
 
+    /// <summary>
+    /// Adds Swagger and gRPC documentation configuration to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration.</param>
     public static void AddSwaggerWithGrpc(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddGrpcSwagger();
@@ -49,12 +63,17 @@ public static class Configurations
                             Id = "Bearer"
                         }
                     },
-                    new string[] { }
+                    Array.Empty<string>()
                 }
             });
         });
     }
 
+    /// <summary>
+    /// Adds JWT authentication to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="jwtOptions">The JWT options.</param>
     public static void AddJwtAuthentication(this IServiceCollection services, JwtOptions jwtOptions)
     {
         services.AddAuthorizationBuilder();
@@ -109,6 +128,11 @@ public static class Configurations
         });
     }
 
+    /// <summary>
+    /// Adds the settings configuration to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration.</param>
     public static void AddSettings(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));

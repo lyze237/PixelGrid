@@ -23,7 +23,7 @@ public partial class BlenderRenderer : IRenderer
         {
             WorkingDirectory = workingDirectory,
             UseShellExecute = false,
-            RedirectStandardOutput = true,
+            RedirectStandardOutput = true
         };
         args.ToList().ForEach(arg => startInfo.ArgumentList.Add(arg)); // why
 
