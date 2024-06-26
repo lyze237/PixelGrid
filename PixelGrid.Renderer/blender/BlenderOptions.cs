@@ -14,6 +14,9 @@ public class BlenderOptions(Engine engine) : Options
     {
         var args = new List<string>
         {
+            "--factory-startup",
+            "-noaudio",
+            
             "-b",
             filename,
             "-o",
@@ -31,12 +34,19 @@ public class BlenderOptions(Engine engine) : Options
             throw new ArgumentException("Enum does not have an EnumMember Attribute", nameof(RenderFormat)),
         };
 
-        args.AddRange(EndFrame != null
-            ? new[] {"-s", StartFrame.ToString(), "-e", EndFrame.ToString()!, "-a"}
-            : ["-f", StartFrame.ToString()]);
-
         if (Scene != null)
             args.AddRange(new[] {"-S", Scene});
+
+        if (Animation != null)
+        {
+            args.AddRange(new [] { "-s", Animation.StartFrame.ToString(), "-e", Animation.EndFrame.ToString(), "-a" });
+        }
+        else
+        {
+            args.Add("-f");
+            if (CustomFrame.HasValue)
+                args.Add(CustomFrame.Value.ToString());
+        }
 
         if (this is CyclesBlenderOptions cyclesOptions)
         {

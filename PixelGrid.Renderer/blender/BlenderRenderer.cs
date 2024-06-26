@@ -40,6 +40,9 @@ public partial class BlenderRenderer : IRenderer
         callback.OnCompleted(process.ExitCode);
     }
 
+    public RendererCapabilities GetCapabilities() =>
+        RendererCapabilities.Frame | RendererCapabilities.Animation | RendererCapabilities.Border;
+
     private static void ParseBlenderOutput(string? line, IRenderCallback callback)
     {
         if (line == null)

@@ -47,6 +47,9 @@ public partial class PovrayRenderer : IRenderer
         callback.OnCompleted(process.ExitCode);
     }
 
+    public RendererCapabilities GetCapabilities() =>
+        RendererCapabilities.Frame | RendererCapabilities.Border;
+
     private void ParsePovrayOutput(string? line, IRenderCallback callback)
     {
         if (line == null)
