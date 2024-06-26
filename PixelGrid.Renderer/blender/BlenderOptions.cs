@@ -10,17 +10,17 @@ public class BlenderOptions(Engine engine) : Options
     public BlenderRenderFormat RenderFormat { get; set; } = BlenderRenderFormat.Png;
     public string? Scene { get; set; } = null;
 
-    public string[] BuildCommandLineOptions(string filename, string outputDirectory)
+    public string[] BuildCommandLineOptions(string filename, string outputDirectory, string outputFilename)
     {
         var args = new List<string>
         {
             "--factory-startup",
             "-noaudio",
-            
+
             "-b",
             filename,
             "-o",
-            outputDirectory,
+            $"{(Path.IsPathRooted(outputDirectory) ? "" : "//")}{outputDirectory}/{Path.GetFileNameWithoutExtension(outputFilename)}",
 
             "-E",
             Engine.GetEnumValue() ?? throw new ArgumentException("Enum does not have an EnumMember Attribute",
@@ -35,18 +35,25 @@ public class BlenderOptions(Engine engine) : Options
         };
 
         if (Scene != null)
-            args.AddRange(new[] {"-S", Scene});
+            args.AddRange(new[] { "-S", Scene });
 
-        if (Animation != null)
+        if (Border != null)
         {
-            args.AddRange(new [] { "-s", Animation.StartFrame.ToString(), "-e", Animation.EndFrame.ToString(), "-a" });
+            args.Add("--python-expr");
+            args.Add(string.Join("\n", [
+                "import bpy",
+                "for scene in bpy.data.scenes:",
+                 "    scene.render.use_border = True",
+                $"    scene.render.border_min_x = {Border.BorderMinX}",
+                $"    scene.render.border_min_y = {Border.BorderMinY}",
+                $"    scene.render.border_max_x = {Border.BorderMaxX}",
+                $"    scene.render.border_max_y = {Border.BorderMaxY}",
+            ]));
         }
-        else
-        {
-            args.Add("-f");
-            if (CustomFrame.HasValue)
-                args.Add(CustomFrame.Value.ToString());
-        }
+
+        args.AddRange(Animation != null
+            ? new[] { "-s", Animation.StartFrame.ToString(), "-e", Animation.EndFrame.ToString(), "-a" }
+            : ["-f", Frame.ToString()]);
 
         if (this is CyclesBlenderOptions cyclesOptions)
         {

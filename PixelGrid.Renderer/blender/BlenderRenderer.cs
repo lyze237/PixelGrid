@@ -14,9 +14,9 @@ public partial class BlenderRenderer : IRenderer
             throw new ArgumentException($"The options need to be of type {nameof(BlenderOptions)} in a Blender render",
                 nameof(options));
 
-        const string exe = @"C:\Program Files\Blender Foundation\Blender 4.0\blender.exe";
+        const string exe = @"C:\Users\lyze\AppData\Roaming\BlenderInstalls\stable\blender-3.6.12-lts.626a6b1c6799\blender.exe";
 
-        var args = blenderOptions.BuildCommandLineOptions(filename, outputDirectory);
+        var args = blenderOptions.BuildCommandLineOptions(filename, outputDirectory, outputFilename);
         Console.WriteLine($"Starting: {exe} {string.Join(", ", args)}");
 
         var startInfo = new ProcessStartInfo(exe)

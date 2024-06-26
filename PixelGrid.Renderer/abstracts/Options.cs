@@ -5,7 +5,7 @@ public abstract class Options
     public int Width { get; set; } = 1920;
     public int Height { get; set; } = 1080;
 
-    public int? CustomFrame { get; set; } = null;
+    public int Frame { get; set; } = 0;
     
     public AnimationOptions? Animation { get; set; }
 
