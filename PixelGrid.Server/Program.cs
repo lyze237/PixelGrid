@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using PixelGrid.Database;
 using PixelGrid.Server.Configurations;
 using PixelGrid.Server.Controllers;
-using PixelGrid.Server.Db;
+using PixelGrid.Server.Domain;
 using PixelGrid.Server.Hubs;
 using PixelGrid.Server.Options;
 

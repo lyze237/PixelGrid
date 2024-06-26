@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations\" />
+      <ProjectReference Include="..\PixelGrid.Server.Infra\PixelGrid.Server.Infra.csproj" />
     </ItemGroup>
 
 </Project>

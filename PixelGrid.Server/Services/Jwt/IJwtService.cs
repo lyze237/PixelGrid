@@ -1,4 +1,4 @@
-using PixelGrid.Server.Db;
+using PixelGrid.Server.Domain.Entities;
 
 namespace PixelGrid.Server.Services.Jwt;
 

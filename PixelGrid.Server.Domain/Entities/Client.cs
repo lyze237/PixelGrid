@@ -1,4 +1,4 @@
-namespace PixelGrid.Server.Db;
+namespace PixelGrid.Server.Domain.Entities;
 
 public class Client
 {

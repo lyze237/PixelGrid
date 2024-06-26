@@ -1,6 +1,7 @@
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
-using PixelGrid.Server.Db;
+using PixelGrid.Database;
+using PixelGrid.Server.Domain;
 
 namespace PixelGrid.Server.Controllers;
 
@@ -11,7 +12,7 @@ public class ClientController(ApplicationDbContext dbContext, ILogger<ClientCont
     {
         logger.LogInformation("Registering client {name}", request.Name);
 
-        var client = dbContext.Clients.Add(Db.Client.CreateClient(request.Name));
+        var client = dbContext.Clients.Add(Domain.Entities.Client.CreateClient(request.Name));
         await dbContext.SaveChangesAsync();
 
         return new ClientRegisterResponse { 

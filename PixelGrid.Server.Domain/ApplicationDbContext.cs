@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PixelGrid.Server.Domain.Entities;
 
-namespace PixelGrid.Server.Db;
+namespace PixelGrid.Server.Domain;
 
 public class ApplicationDbContext (DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User, Role, string>(options)
 {

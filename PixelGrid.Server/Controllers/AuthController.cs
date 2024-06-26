@@ -1,6 +1,6 @@
 using Grpc.Core;
 using Microsoft.AspNetCore.Identity;
-using PixelGrid.Server.Db;
+using PixelGrid.Server.Domain.Entities;
 using PixelGrid.Server.Services.Jwt;
 
 namespace PixelGrid.Server.Controllers;
