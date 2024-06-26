@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using PixelGrid.Database;
 using PixelGrid.Server.Configurations;
 using PixelGrid.Server.Controllers;
 using PixelGrid.Server.Domain;
+using PixelGrid.Server.Domain.Repositories;
 using PixelGrid.Server.Hubs;
+using PixelGrid.Server.Infra.Repositories;
 using PixelGrid.Server.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,8 @@ builder.Configuration.Bind("jwt", jwtOptions);
 
 builder.Services.AddGrpc().AddJsonTranscoding();
 builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddScoped<IUserManagementRepository, DbUserManagementRepository>();
+builder.Services.AddScoped<IClientRepository, DbClientRepository>();
 builder.Services.AddJwtAuthentication(jwtOptions);
 builder.Services.AddSignalR();
 builder.Services.AddSettings(builder.Configuration);
