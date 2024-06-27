@@ -51,7 +51,7 @@ namespace PixelGrid.Server.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Clients",
+                name: "RenderClients",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
@@ -63,7 +63,7 @@ namespace PixelGrid.Server.Domain.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Clients", x => x.Id);
+                    table.PrimaryKey("PK_RenderClients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -229,7 +229,7 @@ namespace PixelGrid.Server.Domain.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Clients");
+                name: "RenderClients");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

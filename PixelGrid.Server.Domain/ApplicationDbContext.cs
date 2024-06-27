@@ -6,5 +6,5 @@ namespace PixelGrid.Server.Domain;
 
 public class ApplicationDbContext (DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<UserEntity, RoleEntity, string>(options)
 {
-    public DbSet<ClientEntity> Clients { get; set; }
+    public DbSet<RenderClientEntity> RenderClients { get; set; }
 }

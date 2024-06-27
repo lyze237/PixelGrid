@@ -7,7 +7,7 @@ namespace PixelGrid.Server.Controllers;
 /// <summary>
 /// Represents a controller for managing client operations.
 /// </summary>
-public class ClientController(ClientService clientService, ILogger<ClientController> logger) : Client.ClientBase
+public class RenderClientController(ClientService clientService, ILogger<RenderClientController> logger) : RenderClientControllerProto.RenderClientControllerProtoBase
 {
     /// <summary>
     /// Registers a client.
@@ -16,7 +16,7 @@ public class ClientController(ClientService clientService, ILogger<ClientControl
     /// <param name="context">The server call context.</param>
     /// <returns>The registration response.</returns>
     [Authorize]
-    public override async Task<ClientRegisterResponse> Register(ClientRegisterRequest request,
+    public override async Task<RenderClientRegisterResponse> Register(RenderClientRegisterRequest request,
         ServerCallContext context) =>
         await clientService.Register(request);
 }

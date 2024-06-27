@@ -46,14 +46,14 @@ public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions
     /// <summary>
     /// Generates a JSON Web Token (JWT) for the given client entity.
     /// </summary>
-    /// <param name="client">The client entity for which to generate the token.</param>
+    /// <param name="renderClient">The client entity for which to generate the token.</param>
     /// <returns>The generated JWT token string.</returns>
-    public Task<string> GenerateClientTokenAsync(ClientEntity client)
+    public Task<string> GenerateClientTokenAsync(RenderClientEntity renderClient)
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, client.Id.ToString()),
-            new(ClaimTypes.Actor, client.Token)
+            new(ClaimTypes.NameIdentifier, renderClient.Id.ToString()),
+            new(ClaimTypes.Actor, renderClient.Token)
         };
 
         var securityToken = new JwtSecurityTokenHandler().CreateToken(new SecurityTokenDescriptor

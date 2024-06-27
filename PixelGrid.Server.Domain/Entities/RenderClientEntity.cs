@@ -1,6 +1,6 @@
 namespace PixelGrid.Server.Domain.Entities;
 
-public class ClientEntity
+public class RenderClientEntity
 {
     public long Id { get; set; }
     
@@ -11,9 +11,9 @@ public class ClientEntity
     public bool Connected { get; set; }
     public DateTime? LastConnected { get; set; }
 
-    public static ClientEntity CreateClient(string name)
+    public static RenderClientEntity CreateClient(string name)
     {
-        return new ClientEntity
+        return new RenderClientEntity
         {
             Token = Guid.NewGuid().ToString(),
             Name = name

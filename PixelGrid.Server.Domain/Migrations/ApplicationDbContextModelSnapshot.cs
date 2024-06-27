@@ -119,7 +119,7 @@ namespace PixelGrid.Server.Domain.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PixelGrid.Server.Domain.Entities.Client", b =>
+            modelBuilder.Entity("PixelGrid.Server.Domain.Entities.RenderClientEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -141,10 +141,10 @@ namespace PixelGrid.Server.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.ToTable("RenderClients");
                 });
 
-            modelBuilder.Entity("PixelGrid.Server.Domain.Entities.Role", b =>
+            modelBuilder.Entity("PixelGrid.Server.Domain.Entities.RoleEntity", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -170,7 +170,7 @@ namespace PixelGrid.Server.Domain.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("PixelGrid.Server.Domain.Entities.User", b =>
+            modelBuilder.Entity("PixelGrid.Server.Domain.Entities.UserEntity", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -236,7 +236,7 @@ namespace PixelGrid.Server.Domain.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("PixelGrid.Server.Domain.Entities.Role", null)
+                    b.HasOne("PixelGrid.Server.Domain.Entities.RoleEntity", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -245,7 +245,7 @@ namespace PixelGrid.Server.Domain.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("PixelGrid.Server.Domain.Entities.User", null)
+                    b.HasOne("PixelGrid.Server.Domain.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -254,7 +254,7 @@ namespace PixelGrid.Server.Domain.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("PixelGrid.Server.Domain.Entities.User", null)
+                    b.HasOne("PixelGrid.Server.Domain.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -263,13 +263,13 @@ namespace PixelGrid.Server.Domain.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("PixelGrid.Server.Domain.Entities.Role", null)
+                    b.HasOne("PixelGrid.Server.Domain.Entities.RoleEntity", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PixelGrid.Server.Domain.Entities.User", null)
+                    b.HasOne("PixelGrid.Server.Domain.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -278,7 +278,7 @@ namespace PixelGrid.Server.Domain.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("PixelGrid.Server.Domain.Entities.User", null)
+                    b.HasOne("PixelGrid.Server.Domain.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

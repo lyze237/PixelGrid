@@ -12,14 +12,14 @@ public class ClientService(JwtService jwtService, ApplicationDbContext dbContext
     /// </summary>
     /// <param name="request">The registration request.</param>
     /// <returns>The registration response.</returns>
-    public async Task<ClientRegisterResponse> Register(ClientRegisterRequest request)
+    public async Task<RenderClientRegisterResponse> Register(RenderClientRegisterRequest request)
     {
         logger.LogInformation("Registering client {Name}", request.Name);
 
-        var client = dbContext.Clients.Add(ClientEntity.CreateClient(request.Name));
+        var client = dbContext.RenderClients.Add(RenderClientEntity.CreateClient(request.Name));
         await dbContext.SaveChangesAsync();
 
-        return new ClientRegisterResponse { 
+        return new RenderClientRegisterResponse { 
             Success = true,
             Token = await jwtService.GenerateClientTokenAsync(client.Entity)
         };

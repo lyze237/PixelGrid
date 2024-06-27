@@ -10,5 +10,7 @@ public interface IRenderHub
     public interface IClient
     {
         Task ServerToClient(string message);
+
+        Task ForceDisconnect(string reason);
     }
 }

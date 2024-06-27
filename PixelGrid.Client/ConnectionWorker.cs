@@ -63,4 +63,9 @@ public class HubReceiver : IRenderHub.IClient
     {
         Console.WriteLine($"Heeey~ {message}");
     }
+
+    public async Task ForceDisconnect(string reason)
+    {
+        Console.WriteLine("We got force disconnected... ;(");
+    }
 }

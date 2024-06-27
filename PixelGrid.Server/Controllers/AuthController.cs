@@ -6,7 +6,7 @@ namespace PixelGrid.Server.Controllers;
 /// <summary>
 /// Class responsible for user authentication and authorization.
 /// </summary>
-public class AuthController(UserManagementService userManagement, ILogger<AuthController> logger) : Auth.AuthBase
+public class AuthController(UserManagementService userManagement, ILogger<AuthController> logger) : AuthControllerProto.AuthControllerProtoBase
 {
     /// <summary>
     /// Registers a user.

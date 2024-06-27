@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using PixelGrid.Server.Authorization;
 using PixelGrid.Server.Domain.Repositories;
 using PixelGrid.Server.Infra.Repositories;
 using PixelGrid.Server.Services;
@@ -15,7 +17,10 @@ public static class DependencyConfigurations
     /// <param name="services">The service collection.</param>
     public static void RegisterDependencies(this IServiceCollection services)
     {
+        services.AddScoped<IAuthorizationHandler, RendererAuthorizationHandler>();
+        
         services.AddScoped<UserManagementService>();
+        services.AddScoped<RenderClientsManagementService>();
         services.AddScoped<ClientService>();
         services.AddScoped<JwtService>();
         

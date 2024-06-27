@@ -8,46 +8,45 @@ namespace PixelGrid.Server.Infra.Repositories;
 public class GenericRepository<TEntity, TId>(ApplicationDbContext dbContext) : IGenericRepository<TEntity, TId>
     where TEntity : class
 {
-    private readonly DbSet<TEntity> dbSet = dbContext.Set<TEntity>();
-    
-    private readonly char[] separator = [','];
+    protected readonly DbSet<TEntity> DbSet = dbContext.Set<TEntity>();
 
-    public List<TEntity> Get(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string includeProperties = "")
+    public async Task<List<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
     {
-        IQueryable<TEntity> query = dbSet;
+        IQueryable<TEntity> query = DbSet;
 
         if (filter != null)
             query = query.Where(filter);
 
-        query = includeProperties
-            .Split(separator, StringSplitOptions.RemoveEmptyEntries)
-            .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
-
-        return orderBy != null ? orderBy(query).ToList() : query.ToList();
+        return orderBy != null ? await orderBy(query).ToListAsync() : await query.ToListAsync();
     }
 
     public async Task<TEntity?> GetByIdAsync(TId id) => 
-        await dbSet.FindAsync(id);
+        await DbSet.FindAsync(id);
 
     public async Task CreateAsync(TEntity entity) => 
-        await dbSet.AddAsync(entity);
+        await DbSet.AddAsync(entity);
 
     public async Task RemoveAsync(TId id)
     {
-        var entity = await dbSet.FindAsync(id);
+        var entity = await DbSet.FindAsync(id);
         if (entity == null)
             throw new ArgumentNullException($"Entity with id {id} not found");
         
-        await RemoveAsync(entity);
+        await Remove(entity);
     }
 
-    public Task RemoveAsync(TEntity entity)
+    public Task Remove(TEntity entity)
     {
-        if (dbSet.Entry(entity).State == EntityState.Detached)
-            dbSet.Attach(entity);
+        if (DbSet.Entry(entity).State == EntityState.Detached)
+            DbSet.Attach(entity);
 
-        dbSet.Remove(entity);
+        DbSet.Remove(entity);
         return Task.CompletedTask;
+    }
+
+    public void Update(TEntity entity)
+    {
+        DbSet.Update(entity);
     }
 
     public async Task SaveAsync() => 

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/api/annotations.proto";
 
-service Auth {
+service AuthControllerProto {
   rpc Register(AuthRegisterRequest) returns (AuthRegisterResponse) {
     option (google.api.http) = {
       post: "/v1/Auth/Register"

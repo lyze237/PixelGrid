@@ -2,19 +2,19 @@ syntax = "proto3";
 
 import "google/api/annotations.proto";
 
-service Client {
-  rpc Register(ClientRegisterRequest) returns (ClientRegisterResponse) {
+service RenderClientControllerProto {
+  rpc Register(RenderClientRegisterRequest) returns (RenderClientRegisterResponse) {
     option (google.api.http) = {
       post: "/v1/Client/Register"
     };
   }
 }
 
-message ClientRegisterRequest {
+message RenderClientRegisterRequest {
   string name = 1;
 }
 
-message ClientRegisterResponse {
+message RenderClientRegisterResponse {
   bool success = 1;
   string token = 2;
 }
