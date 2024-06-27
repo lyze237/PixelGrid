@@ -36,7 +36,7 @@ public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions
             Subject = new ClaimsIdentity(claims),
             Issuer = options.Value.Issuer,
             Audience = options.Value.Audience,
-            Expires = DateTime.UtcNow.AddHours(1), // expires after 1 hour
+            Expires = DateTime.UtcNow.AddDays(1), // expires after 1 day
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Value.Key)), SecurityAlgorithms.HmacSha256Signature)
         });
 
@@ -61,7 +61,7 @@ public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions
             Subject = new ClaimsIdentity(claims),
             Issuer = options.Value.Issuer,
             Audience = options.Value.Audience,
-            Expires = DateTime.UtcNow.AddHours(1), // expires after 1 hour
+            Expires = DateTime.UtcNow.AddYears(1), // expires after 1 year
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Value.Key)), SecurityAlgorithms.HmacSha256Signature)
         });
 

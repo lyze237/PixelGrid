@@ -1,6 +1,7 @@
 using System.Security.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using PixelGrid.Server.Domain.Entities;
 using PixelGrid.Server.Domain.Repositories;
 using PixelGrid.Server.Hubs;
@@ -96,5 +97,4 @@ public class RenderClientsManagementService(
     /// <returns>The authentication token, or null if not found.</returns>
     private static string? GetAuthenticationToken(ClaimsPrincipal? claimsPrincipal) =>
         claimsPrincipal?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Actor)?.Value ?? null;
-
 }

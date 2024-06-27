@@ -1,4 +1,5 @@
 using PixelGrid.Server.Domain.Entities;
+using PixelGrid.Shared.Renderer;
 
 namespace PixelGrid.Server.Domain.Repositories;
 

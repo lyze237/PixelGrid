@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using PixelGrid.Server.Domain;
 using PixelGrid.Server.Domain.Entities;

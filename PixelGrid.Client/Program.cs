@@ -11,6 +11,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.Configure<RendererOptions>(builder.Configuration.GetSection("Renderers"));
 
 builder.Services.AddSingleton<RenderFactory>();
+builder.Services.AddTransient<ConnectionReceiver>();
 
 builder.Services.AddKeyedTransient<IRenderer, BlenderRenderer>(RenderType.Blender);
 builder.Services.AddKeyedTransient<IRenderer, PovrayRenderer>(RenderType.Povray);

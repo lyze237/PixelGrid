@@ -15,5 +15,6 @@ public interface IRenderHub
         Task ServerToClient(string message);
 
         Task ForceDisconnect(string reason);
+        Task CreateJob(long id, string[] filePaths, string projectFilename, RenderType type);
     }
 }
