@@ -3,12 +3,16 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using PixelGrid.Client.Extensions;
 using PixelGrid.Client.Options;
+using PixelGrid.Client.renderer;
 using PixelGrid.Shared.Hubs;
 using TypedSignalR.Client;
 
 namespace PixelGrid.Client;
 
-public class ConnectionWorker(IOptions<RendererOptions> rendererOptions, ILogger<ConnectionWorker> logger) : BackgroundService
+public class ConnectionWorker(
+    RenderFactory factory,
+    IOptions<RendererOptions> rendererOptions,
+    ILogger<ConnectionWorker> logger) : BackgroundService
 {
     private async Task<HubConnection> CreateHubConnection(CancellationToken stoppingToken)
     {
@@ -48,7 +52,15 @@ public class ConnectionWorker(IOptions<RendererOptions> rendererOptions, ILogger
         var proxy = hub.CreateHubProxy<IRenderHub.IServer>(stoppingToken);
 
         hub.Register<IRenderHub.IClient>(new HubReceiver());
-        
+
+        foreach (var (type, versions) in rendererOptions.Value.Versions)
+        {
+            foreach (var (version, exe) in versions)
+            {
+                await proxy.RegisterProgram(type, version, factory.GetRenderer(type, exe).GetCapabilities());
+            }
+        }
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await proxy.ClientToServer(DateTime.Now.ToString(CultureInfo.InvariantCulture));

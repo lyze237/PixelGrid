@@ -4,6 +4,7 @@ using PixelGrid.Client.renderer;
 using PixelGrid.Client.renderer.abstracts;
 using PixelGrid.Client.renderer.blender;
 using PixelGrid.Client.renderer.povray;
+using PixelGrid.Shared.Renderer;
 
 var builder = Host.CreateApplicationBuilder(args);
 

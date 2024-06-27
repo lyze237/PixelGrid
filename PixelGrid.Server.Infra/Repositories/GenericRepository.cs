@@ -23,8 +23,8 @@ public class GenericRepository<TEntity, TId>(ApplicationDbContext dbContext) : I
     public async Task<TEntity?> GetByIdAsync(TId id) => 
         await DbSet.FindAsync(id);
 
-    public async Task CreateAsync(TEntity entity) => 
-        await DbSet.AddAsync(entity);
+    public async Task<TEntity> CreateAsync(TEntity entity) => 
+        (await DbSet.AddAsync(entity)).Entity;
 
     public async Task RemoveAsync(TId id)
     {
@@ -41,6 +41,12 @@ public class GenericRepository<TEntity, TId>(ApplicationDbContext dbContext) : I
             DbSet.Attach(entity);
 
         DbSet.Remove(entity);
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveRange(IEnumerable<TEntity> entity)
+    {
+        DbSet.RemoveRange(entity);
         return Task.CompletedTask;
     }
 

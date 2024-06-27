@@ -5,7 +5,7 @@ import "google/api/annotations.proto";
 service RenderClientControllerProto {
   rpc Register(RenderClientRegisterRequest) returns (RenderClientRegisterResponse) {
     option (google.api.http) = {
-      post: "/v1/Client/Register"
+      post: "/v1/RenderClient/Register"
     };
   }
 }

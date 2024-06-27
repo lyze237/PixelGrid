@@ -1,4 +1,5 @@
 using PixelGrid.Client.renderer;
+using PixelGrid.Shared.Renderer;
 
 namespace PixelGrid.Client.Options;
 

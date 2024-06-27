@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using PixelGrid.Server.Domain.Repositories;
 using PixelGrid.Server.Services;
 using PixelGrid.Shared.Hubs;
+using PixelGrid.Shared.Renderer;
 
 namespace PixelGrid.Server.Hubs;
 
@@ -24,9 +25,14 @@ public class RenderHub(RenderClientsManagementService renderManagementService, I
         await Clients.All.ServerToClient($"Pong {message}");
     }
 
+    public async Task RegisterProgram(RenderType type, string version, RendererCapabilities rendererCapabilities)
+    {
+        renderManagementService.RegisterProgram(Context, type, version, rendererCapabilities);
+    }
+
     public override async Task OnConnectedAsync() => 
-        await renderManagementService.SetClientConnectionStatus(Context.User, true);
+        await renderManagementService.ClientRegistered(Context);
 
     public override async Task OnDisconnectedAsync(Exception? exception) => 
-        await renderManagementService.SetClientConnectionStatus(Context.User, false);
+        await renderManagementService.ClientDisconnected(Context);
 }

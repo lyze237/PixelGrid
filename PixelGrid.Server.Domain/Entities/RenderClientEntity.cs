@@ -1,3 +1,5 @@
+using PixelGrid.Shared.Renderer;
+
 namespace PixelGrid.Server.Domain.Entities;
 
 public class RenderClientEntity
@@ -8,8 +10,11 @@ public class RenderClientEntity
 
     public string Name { get; set; }
 
+    public string? ConnectionId { get; set; }
     public bool Connected { get; set; }
     public DateTime? LastConnected { get; set; }
+    
+    public virtual IList<RenderClientProgramVersionEntity> Programs { get; set; }
 
     public static RenderClientEntity CreateClient(string name)
     {

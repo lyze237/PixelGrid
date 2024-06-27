@@ -11,4 +11,8 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.6"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PixelGrid.Shared\PixelGrid.Shared.csproj" />
+    </ItemGroup>
 </Project>
