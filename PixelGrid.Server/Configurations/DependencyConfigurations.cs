@@ -20,6 +20,7 @@ public static class DependencyConfigurations
     {
         services.AddScoped<IAuthorizationHandler, RendererAuthorizationHandler>();
         
+        services.AddScoped<FilesService>();
         services.AddScoped<UserManagementService>();
         services.AddScoped<RenderClientsManagementService>();
         services.AddScoped<RenderJobManagementService>();

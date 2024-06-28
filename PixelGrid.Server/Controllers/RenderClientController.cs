@@ -16,7 +16,6 @@ public class RenderClientController(RenderClientsManagementService renderClients
     /// <param name="context">The server call context.</param>
     /// <returns>The registration response.</returns>
     [Authorize]
-    public override async Task<RenderClientRegisterResponse> Register(RenderClientRegisterRequest request,
-        ServerCallContext context) =>
+    public override async Task<RenderClientRegisterResponse> Register(RenderClientRegisterRequest request, ServerCallContext context) =>
         await renderClientsManagementService.Register(request);
 }

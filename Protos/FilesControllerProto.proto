@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+service FilesControllerProto {
+  rpc RequestFileMetadata(RequestFileMetadataRequest) returns (RequestFileMetadataResponse) {
+    option (google.api.http) = {
+      get: "/v1/Files/RequestFileMetadata"
+    };
+  }
+
+  rpc RequestFile(RequestFileRequest) returns (stream RequestFileResponse) {
+    option (google.api.http) = {
+      get: "/v1/Files/RequestFile"
+    };
+  }
+}
+
+message RequestFileRequest {
+  string fileName = 1;
+}
+
+message RequestFileResponse {
+  bytes content = 1;
+}
+
+message RequestFileMetadataRequest {
+  string fileName = 1;
+  int64 size = 2;
+}
+
+message RequestFileMetadataResponse {
+  int64 size = 1;
+  google.protobuf.BytesValue hash = 2;
+}

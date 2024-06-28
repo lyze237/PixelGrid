@@ -98,6 +98,7 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
         var headers = new Metadata {{"Authorization", $"Bearer {options.Value.Token}"}};
 
         var renderJobChannel = new RenderJobControllerProto.RenderJobControllerProtoClient(channel);
+        var filesChannel = new FilesControllerProto.FilesControllerProtoClient(channel);
 
         var jobsFolder = "C:\\Users\\lyze\\Desktop\\blenderTest\\jobs";
 
@@ -113,7 +114,7 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
 
             var file = new FileInfo(path);
 
-            var metadataResponse = renderJobChannel.RequestFileMetadata(new RequestFileMetadataRequest
+            var metadataResponse = filesChannel.RequestFileMetadata(new RequestFileMetadataRequest
             {
                 FileName = requestPath,
                 Size = file.Length
@@ -124,7 +125,7 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
                 logger.LogInformation("File sizes are different: {FileLength} != {ResponseLength}", file.Length,
                     metadataResponse.Size);
 
-                await RequestFile(renderJobChannel, requestPath, path, headers);
+                await RequestFile(filesChannel, requestPath, path, headers);
             }
             else
             {
@@ -135,17 +136,17 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
                 if (!metadataResponse.Hash.ToByteArray().SequenceEqual(computeHashAsync))
                 {
                     logger.LogInformation("Hashes are different, requesting new file for {Path}", path);
-                    await RequestFile(renderJobChannel, requestPath, path, headers);
+                    await RequestFile(filesChannel, requestPath, path, headers);
                 }
             }
         }
     }
 
-    private async Task RequestFile(RenderJobControllerProto.RenderJobControllerProtoClient renderJobChannel,
+    private async Task RequestFile(FilesControllerProto.FilesControllerProtoClient filesChannel,
         string requestPath, string path,
         Metadata headers)
     {
-        using var response = renderJobChannel.RequestFile(new RequestFileRequest
+        using var response = filesChannel.RequestFile(new RequestFileRequest
         {
             FileName = requestPath
         }, headers);

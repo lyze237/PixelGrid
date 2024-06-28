@@ -36,6 +36,7 @@ app.UseAuthorization();
 app.MapGrpcService<AuthController>();
 app.MapGrpcService<RenderClientController>();
 app.MapGrpcService<RenderJobController>();
+app.MapGrpcService<FilesController>();
 
 app.MapHub<RenderHub>("/hubs/render");
 

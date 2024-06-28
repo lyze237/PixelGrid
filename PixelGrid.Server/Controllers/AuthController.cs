@@ -23,8 +23,6 @@ public class AuthController(UserManagementService userManagement, ILogger<AuthCo
     /// <param name="request">The login request.</param>
     /// <param name="context">The server call context.</param>
     /// <returns>The login response.</returns>
-    public override async Task<AuthLoginResponse> Login(AuthLoginRequest request, ServerCallContext context)
-    {
-        return await userManagement.Login(request);
-    }
+    public override async Task<AuthLoginResponse> Login(AuthLoginRequest request, ServerCallContext context) => 
+        await userManagement.Login(request);
 }

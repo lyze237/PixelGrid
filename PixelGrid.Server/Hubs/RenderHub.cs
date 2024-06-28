@@ -25,14 +25,29 @@ public class RenderHub(RenderClientsManagementService renderManagementService, I
         await Clients.All.ServerToClient($"Pong {message}");
     }
 
-    public async Task RegisterProgram(RenderType type, string version, RendererCapabilities rendererCapabilities)
-    {
-        renderManagementService.RegisterProgram(Context, type, version, rendererCapabilities);
-    }
+    /// <summary>
+    /// Registers a program with the RenderHub.
+    /// </summary>
+    /// <param name="type">The type of the renderer program. Possible values are Povray or Blender.</param>
+    /// <param name="version">The version of the renderer program.</param>
+    /// <param name="rendererCapabilities">The capabilities of the renderer program.</param>
+    /// <returns>A Task representing the asynchronous operation.</returns>
+    public async Task RegisterProgram(RenderType type, string version, RendererCapabilities rendererCapabilities) =>
+        await renderManagementService.RegisterProgram(Context, type, version, rendererCapabilities);
 
+    /// <summary>
+    /// Overrides the OnConnectedAsync method in the SignalR Hub class and handles the logic when a client connects to the RenderHub.
+    /// </summary>
+    /// <param name="exception">The exception that occurred during the client connection, if any.</param>
+    /// <returns>A Task representing the asynchronous operation.</returns>
     public override async Task OnConnectedAsync() => 
         await renderManagementService.ClientRegistered(Context);
 
-    public override async Task OnDisconnectedAsync(Exception? exception) => 
+    /// <summary>
+    /// Handles the asynchronous event when a client is disconnected from the RenderHub.
+    /// </summary>
+    /// <param name="exception">The exception that caused the disconnection, if any.</param>
+    /// <returns>A Task representing the asynchronous operation.</returns>
+    public override async Task OnDisconnectedAsync(Exception? exception) =>
         await renderManagementService.ClientDisconnected(Context);
 }

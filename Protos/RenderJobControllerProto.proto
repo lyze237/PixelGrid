@@ -10,18 +10,6 @@ service RenderJobControllerProto {
       post: "/v1/RenderJob/StartRenderTest"
     };
   }
-
-  rpc RequestFileMetadata(RequestFileMetadataRequest) returns (RequestFileMetadataResponse) {
-    option (google.api.http) = {
-      get: "/v1/RenderJob/RequestFileMetadata"
-    };
-  }
-  
-  rpc RequestFile(RequestFileRequest) returns (stream RequestFileResponse) {
-    option (google.api.http) = {
-      get: "/v1/RenderJob/RequestFile"
-    };   
-  }
 }
 
 message StartRenderTestRequest {
@@ -30,23 +18,4 @@ message StartRenderTestRequest {
 
 message StartRenderTestResponse {
   bool success = 1;
-}
-
-message RequestFileRequest {
-  string fileName = 1;
-}
-
-message RequestFileResponse {
-  bytes content = 1;
-}
-
-
-message RequestFileMetadataRequest {
-  string fileName = 1;
-  int64 size = 2;
-}
-
-message RequestFileMetadataResponse {
-  int64 size = 1;
-  google.protobuf.BytesValue hash = 2;
 }

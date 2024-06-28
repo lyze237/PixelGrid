@@ -13,6 +13,7 @@
         <Protobuf Include="../Protos/AuthControllerProto.proto" />
         <Protobuf Include="../Protos/RenderClientControllerProto.proto" />
         <Protobuf Include="../Protos/RenderJobControllerProto.proto" />
+        <Protobuf Include="../Protos/FilesControllerProto.proto" />
     </ItemGroup>
     
     <ItemGroup>
