@@ -5,6 +5,7 @@ namespace PixelGrid.Client.Options;
 
 public class RendererOptions
 {
+    public string Workdir { get; set; }
     public string Url { get; set; }
     public string Token { get; set; }
     

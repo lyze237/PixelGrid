@@ -91,54 +91,88 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
 
     public async Task CreateJob(long id, string[] filePaths, string projectFilename, RenderType type)
     {
-        logger.LogInformation("Creating job with id {Id} and project {File} of type {Type} and {Files} files", id,
-            projectFilename, type, filePaths.Length);
-
-        var channel = GrpcChannel.ForAddress(options.Value.Url);
-        var headers = new Metadata {{"Authorization", $"Bearer {options.Value.Token}"}};
-
-        var renderJobChannel = new RenderJobControllerProto.RenderJobControllerProtoClient(channel);
-        var filesChannel = new FilesControllerProto.FilesControllerProtoClient(channel);
-
-        var jobsFolder = "C:\\Users\\lyze\\Desktop\\blenderTest\\jobs";
-
-        foreach (var requestPath in filePaths)
+        try
         {
-            var path = Path.Combine(jobsFolder, requestPath);
+            logger.LogInformation("Creating job with id {Id} and project {File} of type {Type} and {Files} files", id,
+                projectFilename, type, filePaths.Length);
 
-            logger.LogInformation("Checking file path {Path}", path);
+            var channel = GrpcChannel.ForAddress(options.Value.Url);
+            var headers = new Metadata { { "Authorization", $"Bearer {options.Value.Token}" } };
 
-            var dirPath = Path.GetDirectoryName(path);
-            if (!Directory.Exists(dirPath))
-                Directory.CreateDirectory(dirPath);
+            var filesChannel = new FilesControllerProto.FilesControllerProtoClient(channel);
 
-            var file = new FileInfo(path);
-
-            var metadataResponse = filesChannel.RequestFileMetadata(new RequestFileMetadataRequest
+            foreach (var requestPath in filePaths)
             {
-                FileName = requestPath,
-                Size = file.Length
-            }, headers);
+                var path = Path.Combine(options.Value.Workdir, requestPath);
 
-            if (metadataResponse.Size != file.Length)
-            {
-                logger.LogInformation("File sizes are different: {FileLength} != {ResponseLength}", file.Length,
-                    metadataResponse.Size);
+                logger.LogInformation("Checking file path {Path}", path);
 
-                await RequestFile(filesChannel, requestPath, path, headers);
-            }
-            else
-            {
-                using var sha256 = SHA256.Create();
-                await using var stream = file.OpenRead();
-                var computeHashAsync = await sha256.ComputeHashAsync(stream);
+                var dirPath = Path.GetDirectoryName(path);
+                if (!Directory.Exists(dirPath))
+                    Directory.CreateDirectory(dirPath);
 
-                if (!metadataResponse.Hash.ToByteArray().SequenceEqual(computeHashAsync))
+                var file = new FileInfo(path);
+
+                if (!file.Exists)
                 {
-                    logger.LogInformation("Hashes are different, requesting new file for {Path}", path);
+                    logger.LogInformation("File {Path} doesn't exist on client, downloading.", path);
                     await RequestFile(filesChannel, requestPath, path, headers);
                 }
+                else
+                {
+                    await RequestChunks(filesChannel, requestPath, path, headers);
+                    return;
+                }
             }
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Something happened while downloading chunks for {Project}", projectFilename);
+        }
+    }
+
+    private async Task RequestChunks(FilesControllerProto.FilesControllerProtoClient filesChannel, string requestPath,
+        string path, Metadata headers)
+    {
+        var buffer = new byte[4096];
+        int bytesRead;
+        await using var currentFileStream = File.OpenRead(path);
+        await using var newFileStream = File.Create(path + $".{Random.Shared.NextInt64()}.tmp");
+
+        var request = filesChannel.CompareFileChunks(headers);
+
+        await request.RequestStream.WriteAsync(new CompareFileChunksRequest
+        {
+            FileName = requestPath
+        });
+
+        while ((bytesRead = await currentFileStream.ReadAsync(buffer)) > 0)
+        {
+            var hash = SHA256.HashData(buffer.AsSpan(0, bytesRead));
+
+            await request.RequestStream.WriteAsync(new CompareFileChunksRequest
+            {
+                Hash = ByteString.CopyFrom(hash)
+            });
+
+            await request.ResponseStream.MoveNext();
+            var content = request.ResponseStream.Current;
+
+            if (content.HasContent)
+                await newFileStream.WriteAsync(content.Content.ToByteArray());
+            else if (content.Status.HasOverride)
+                await newFileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+            else if (content.Status.HasEof)
+                break;
+        }
+
+        await request.RequestStream.CompleteAsync();
+
+        while (await request.ResponseStream.MoveNext())
+        {
+            var content = request.ResponseStream.Current;
+
+            await newFileStream.WriteAsync(content.Content.ToByteArray());
         }
     }
 
@@ -155,7 +189,7 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
         await foreach (var chunk in response.ResponseStream.ReadAllAsync())
         {
             logger.LogInformation("Receiving chunk {Chunk}", chunk.Content.Length);
-            await fileStream.WriteAsync(chunk.Content.ToByteArray());
+            chunk.Content.WriteTo(fileStream);
         }
     }
 }

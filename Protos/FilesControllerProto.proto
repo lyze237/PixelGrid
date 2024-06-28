@@ -5,9 +5,15 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
 service FilesControllerProto {
-  rpc RequestFileMetadata(RequestFileMetadataRequest) returns (RequestFileMetadataResponse) {
+  rpc RequestFileLength(RequestFileLengthRequest) returns (RequestFileLengthResponse) {
     option (google.api.http) = {
-      get: "/v1/Files/RequestFileMetadata"
+      get: "/v1/Files/RequestFileLength"
+    };
+  }
+  
+  rpc CompareFileChunks(stream CompareFileChunksRequest) returns (stream CompareFileChunksResponse) {
+    option (google.api.http) = {
+      get: "/v1/Files/CompareFileChunks"
     };
   }
 
@@ -15,6 +21,27 @@ service FilesControllerProto {
     option (google.api.http) = {
       get: "/v1/Files/RequestFile"
     };
+  }
+}
+
+message CompareFileChunksResponse {
+  oneof response {
+    ChunkStatus status = 3;
+    bytes content = 2;
+  }
+}
+
+message CompareFileChunksRequest {
+  oneof request {
+    string fileName = 1;
+    bytes hash = 2;
+  }
+}
+
+message ChunkStatus {
+  oneof status {
+    bool override = 1;
+    bool eof = 2;
   }
 }
 
@@ -26,12 +53,11 @@ message RequestFileResponse {
   bytes content = 1;
 }
 
-message RequestFileMetadataRequest {
+message RequestFileLengthRequest {
   string fileName = 1;
-  int64 size = 2;
+  int64 length = 2;
 }
 
-message RequestFileMetadataResponse {
-  int64 size = 1;
-  google.protobuf.BytesValue hash = 2;
+message RequestFileLengthResponse {
+  int64 length = 1;
 }

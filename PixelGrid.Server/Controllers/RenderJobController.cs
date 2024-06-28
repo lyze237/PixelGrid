@@ -12,8 +12,6 @@ namespace PixelGrid.Server.Controllers;
 [Authorize]
 public class RenderJobController(RenderJobManagementService renderJobManagementService, ILogger<RenderJobController> logger) : RenderJobControllerProto.RenderJobControllerProtoBase
 {
-    private static string dir = "C:\\Users\\lyze\\Desktop\\blenderTest\\Ansichten";
-    
     /// <summary>
     /// Starts the render test.
     /// </summary>
@@ -22,7 +20,7 @@ public class RenderJobController(RenderJobManagementService renderJobManagementS
     /// <returns>The start render test response.</returns>
     public override async Task<StartRenderTestResponse> StartTestRender(StartRenderTestRequest request, ServerCallContext context)
     {
-        await renderJobManagementService.StartTestJob(dir);
+        await renderJobManagementService.StartTestJob();
         return new StartRenderTestResponse();
     }
 }

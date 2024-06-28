@@ -77,5 +77,6 @@ public static class Configurations
     public static void AddSettings(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+        services.Configure<RendererOptions>(configuration.GetSection("Renderer"));
     }
 }
