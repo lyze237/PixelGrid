@@ -1,4 +1,5 @@
 using PixelGrid.Shared.Renderer;
+using PixelGrid.Shared.Renderer.Options;
 
 namespace PixelGrid.Shared.Hubs;
 
@@ -15,6 +16,7 @@ public interface IRenderHub
         Task ServerToClient(string message);
 
         Task ForceDisconnect(string reason);
-        Task CreateJob(long id, string[] filePaths, string projectFilename, RenderType type);
+
+        Task AssignProject(long projectId);
     }
 }

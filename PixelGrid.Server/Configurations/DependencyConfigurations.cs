@@ -27,6 +27,7 @@ public static class DependencyConfigurations
         services.AddScoped<JwtService>();
         
         services.AddScoped<IUserManagementRepository, DbUserManagementRepository>();
+        services.AddScoped<IProjectRepository, DbProjectRepository>();
         services.AddScoped<IRenderClientRepository, DbRenderClientRepository>();
         services.AddScoped<IRenderClientProgramVersionRepository, DbRenderClientProgramVersionRepository>();
     }

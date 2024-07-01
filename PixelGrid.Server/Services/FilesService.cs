@@ -1,7 +1,11 @@
 using Google.Protobuf;
 using System.Security.Cryptography;
 using Grpc.Core;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
+using PixelGrid.Server.Domain.Entities;
+using PixelGrid.Server.Domain.Repositories;
+using PixelGrid.Server.Infra.Exceptions;
 using PixelGrid.Server.Options;
 
 namespace PixelGrid.Server.Services;
@@ -9,8 +13,30 @@ namespace PixelGrid.Server.Services;
 /// <summary>
 /// Service to manage files and file operations.
 /// </summary>
-public class FilesService(IOptions<RendererOptions> options, ILogger<FilesService> logger)
+public class FilesService(
+    IProjectRepository projectRepository,
+    IOptions<RendererOptions> options,
+    ILogger<FilesService> logger)
 {
+    public async Task<RequestProjectFileListResponse> RequestProjectFileList(RequestProjectFileListRequest request)
+    {
+        var project = await projectRepository.GetByIdAsync(request.ProjectId);
+        if (project == null)
+            throw new EntityNotFoundException<ProjectEntity>("Project not found");
+
+        var projectDir = Path.Combine(options.Value.Workdir, project.Id.ToString());
+
+        return new RequestProjectFileListResponse
+        {
+            Path =
+            {
+                Directory
+                    .GetFiles(projectDir, "*", SearchOption.AllDirectories)
+                    .Select(d => d[(projectDir.Length + 1)..]).ToArray()
+            }
+        };
+    }
+
     /// <summary>
     /// Retrieves the length of a file.
     /// </summary>
@@ -21,7 +47,7 @@ public class FilesService(IOptions<RendererOptions> options, ILogger<FilesServic
     {
         logger.LogInformation("Requesting file metadata for {File}", request.FileName);
 
-        var path = Path.Combine(options.Value.Workdir, request.FileName);
+        var path = Path.Combine(options.Value.Workdir, request.ProjectId.ToString(), request.FileName);
         if (!File.Exists(path))
             throw new FileNotFoundException();
 
@@ -31,7 +57,7 @@ public class FilesService(IOptions<RendererOptions> options, ILogger<FilesServic
 
         return new RequestFileLengthResponse
         {
-            Length = file.Length,
+            Length = file.Length
         };
     }
 
@@ -45,7 +71,7 @@ public class FilesService(IOptions<RendererOptions> options, ILogger<FilesServic
     {
         logger.LogInformation("Requesting file {File}", request.FileName);
 
-        var path = Path.Combine(options.Value.Workdir, request.FileName);
+        var path = Path.Combine(options.Value.Workdir, request.ProjectId.ToString(), request.FileName);
         if (!File.Exists(path))
             throw new FileNotFoundException();
 
@@ -83,18 +109,18 @@ public class FilesService(IOptions<RendererOptions> options, ILogger<FilesServic
         var buffer = new byte[4096];
         int bytesRead;
         var fileRequest = requestStream.Current;
-        if (!fileRequest.HasFileName)
+        if (fileRequest.HasHash)
             throw new ArgumentException("First request needs to contain file name");
 
-        var fileStream = OpenFile(requestStream.Current.FileName);
-        logger.LogInformation("Requesting file chunks from {File}", fileRequest.FileName);
+        var fileStream = OpenFile(requestStream.Current.FileInfo.FileName, requestStream.Current.FileInfo.ProjectId);
+        logger.LogInformation("Requesting file chunks from {File}", fileRequest.FileInfo.FileName);
 
         await foreach (var stream in requestStream.ReadAllAsync())
         {
             var clientHash = stream.Hash;
 
             logger.LogInformation("Received hash {Hash}", clientHash.Length);
-            
+
             bytesRead = await fileStream.ReadAsync(buffer);
             if (bytesRead == 0)
             {
@@ -141,14 +167,14 @@ public class FilesService(IOptions<RendererOptions> options, ILogger<FilesServic
         logger.LogInformation("Finished sending all chunks");
     }
 
-    private FileStream OpenFile(string fileName)
+    private FileStream OpenFile(string fileName, long projectId)
     {
-        logger.LogInformation("Checking file path {FileName}", fileName);
+        logger.LogInformation("Checking file path {FileName} in {Project} project", fileName, projectId);
 
         if (string.IsNullOrWhiteSpace(fileName))
             throw new ArgumentException("Bad file name", nameof(fileName));
 
-        var path = Path.Combine(options.Value.Workdir, fileName);
+        var path = Path.Combine(options.Value.Workdir, projectId.ToString(), fileName);
         if (!File.Exists(path))
             throw new FileNotFoundException();
 

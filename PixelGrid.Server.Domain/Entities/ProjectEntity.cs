@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Mime;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using PixelGrid.Shared.Renderer.Options;
 
 namespace PixelGrid.Server.Domain.Entities;
@@ -11,10 +9,9 @@ public class ProjectEntity
     public long Id { get; set; }
     
     public string Name { get; set; }
-    public string Permission { get; set; }
 
     public string RenderFilePath { get; set; }
-    public string LogFilePath { get; set; }
+    public string? LogFilePath { get; set; }
     
     public WorkspaceEntity Workspace { get; set; }
     
@@ -32,7 +29,7 @@ public class ProjectEntity
         set
         {
             OptionsContent = JsonSerializer.Serialize(value);
-            OptionsClass = value.GetType().FullName;
+            OptionsClass = value.GetType().AssemblyQualifiedName;
         }
     }
 }

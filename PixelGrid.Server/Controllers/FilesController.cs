@@ -13,6 +13,10 @@ public class FilesController(
     RenderJobManagementService renderJobManagementService,
     ILogger<RenderJobController> logger) : FilesControllerProto.FilesControllerProtoBase
 {
+    [Authorize(Policy = "RenderClient")]
+    public override Task<RequestProjectFileListResponse> RequestProjectFileList(RequestProjectFileListRequest request, ServerCallContext context) => 
+        filesService.RequestProjectFileList(request);
+
     /// <summary>
     /// Requests a files length.
     /// </summary>
@@ -20,6 +24,7 @@ public class FilesController(
     /// <param name="context">The server call context.</param>
     /// <returns>The response containing the file metadata.</returns>
     /// <exception cref="FileNotFoundException">Thrown when the requested file is not found.</exception>
+    [Authorize(Policy = "RenderClient")]
     public override async Task<RequestFileLengthResponse> RequestFileLength(RequestFileLengthRequest request,
         ServerCallContext context) =>
         filesService.GetFileLength(request);

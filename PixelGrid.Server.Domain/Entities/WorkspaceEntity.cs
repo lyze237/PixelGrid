@@ -6,6 +6,6 @@ public class WorkspaceEntity
 
     public string Name { get; set; }
     public string Description { get; set; }
-
+    
     public TeamEntity Team { get; set; }
 }

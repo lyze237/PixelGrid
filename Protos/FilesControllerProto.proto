@@ -5,6 +5,12 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
 service FilesControllerProto {
+  rpc RequestProjectFileList(RequestProjectFileListRequest) returns (RequestProjectFileListResponse) {
+    option (google.api.http) = {
+      get: "/v1/Files/RequestProjectFileList"
+    };
+  }
+  
   rpc RequestFileLength(RequestFileLengthRequest) returns (RequestFileLengthResponse) {
     option (google.api.http) = {
       get: "/v1/Files/RequestFileLength"
@@ -24,6 +30,15 @@ service FilesControllerProto {
   }
 }
 
+
+message RequestProjectFileListRequest {
+  int64 projectId = 1;
+}
+
+message RequestProjectFileListResponse {
+  repeated string path = 1;
+}
+
 message CompareFileChunksResponse {
   oneof response {
     ChunkStatus status = 3;
@@ -31,9 +46,14 @@ message CompareFileChunksResponse {
   }
 }
 
+message CompareFileChunksFileInformation {
+  int64 projectId = 1;
+  string fileName = 2;
+}
+
 message CompareFileChunksRequest {
   oneof request {
-    string fileName = 1;
+    CompareFileChunksFileInformation fileInfo = 1;
     bytes hash = 2;
   }
 }
@@ -46,7 +66,8 @@ message ChunkStatus {
 }
 
 message RequestFileRequest {
-  string fileName = 1;
+  int64 projectId = 1;
+  string fileName = 2;
 }
 
 message RequestFileResponse {
@@ -54,8 +75,9 @@ message RequestFileResponse {
 }
 
 message RequestFileLengthRequest {
-  string fileName = 1;
-  int64 length = 2;
+  int64 projectId = 1;
+  string fileName = 2;
+  int64 length = 3;
 }
 
 message RequestFileLengthResponse {
