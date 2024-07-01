@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PixelGrid.Server.Configurations;
 using PixelGrid.Server.Controllers;
-using PixelGrid.Server.Domain;
+using PixelGrid.Server.Database;
 using PixelGrid.Server.Hubs;
 using PixelGrid.Server.Options;
 
@@ -19,6 +19,7 @@ builder.Services.AddSettings(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerWithGrpc(builder.Configuration);
 builder.Services.AddCors();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 
 var app = builder.Build();
 

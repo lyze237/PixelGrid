@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using PixelGrid.Server.Domain.Repositories;
 using PixelGrid.Server.Services;
 using PixelGrid.Shared.Hubs;
 using PixelGrid.Shared.Renderer;

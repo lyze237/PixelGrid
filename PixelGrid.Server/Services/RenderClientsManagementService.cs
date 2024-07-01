@@ -1,12 +1,9 @@
 using System.Security.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using PixelGrid.Server.Domain.Entities;
-using PixelGrid.Server.Domain.Repositories;
-using PixelGrid.Server.Hubs;
+using PixelGrid.Server.Database.Entities;
+using PixelGrid.Server.Database.Repositories;
 using PixelGrid.Server.Infra.Exceptions;
-using PixelGrid.Shared.Hubs;
 using PixelGrid.Shared.Renderer;
 
 namespace PixelGrid.Server.Services;
@@ -15,8 +12,8 @@ namespace PixelGrid.Server.Services;
 /// Provides methods for managing the connection status of clients and handling authentication in the rendering service.
 /// </summary>
 public class RenderClientsManagementService(
-    IRenderClientRepository renderClientRepository,
-    IRenderClientProgramVersionRepository programVersionRepository,
+    RenderClientRepository renderClientRepository,
+    RenderClientProgramVersionRepository programVersionRepository,
     JwtService jwtService,
     ILogger<RenderClientsManagementService> logger)
 {

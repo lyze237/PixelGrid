@@ -1,10 +1,7 @@
-using System.Security.Cryptography;
-using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
-using PixelGrid.Server.Domain;
-using PixelGrid.Server.Domain.Entities;
+using PixelGrid.Server.Database;
+using PixelGrid.Server.Database.Entities;
 using PixelGrid.Server.Services;
 using PixelGrid.Shared.Renderer.Options;
 

@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PixelGrid.Server.Domain.Entities;
+using PixelGrid.Server.Database.Entities;
 using PixelGrid.Server.Options;
 
 namespace PixelGrid.Server.Services;

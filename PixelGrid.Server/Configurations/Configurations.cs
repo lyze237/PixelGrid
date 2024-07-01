@@ -1,11 +1,6 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PixelGrid.Server.Domain;
-using PixelGrid.Server.Domain.Entities;
+using PixelGrid.Server.Database;
 using PixelGrid.Server.Options;
 
 namespace PixelGrid.Server.Configurations;

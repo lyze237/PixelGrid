@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using PixelGrid.Server.Authorization;
-using PixelGrid.Server.Domain.Entities;
-using PixelGrid.Server.Domain.Repositories;
-using PixelGrid.Server.Infra.Repositories;
+using PixelGrid.Server.Database.Repositories;
 using PixelGrid.Server.Services;
 
 namespace PixelGrid.Server.Configurations;
@@ -26,9 +24,9 @@ public static class DependencyConfigurations
         services.AddScoped<RenderJobManagementService>();
         services.AddScoped<JwtService>();
         
-        services.AddScoped<IUserManagementRepository, DbUserManagementRepository>();
-        services.AddScoped<IProjectRepository, DbProjectRepository>();
-        services.AddScoped<IRenderClientRepository, DbRenderClientRepository>();
-        services.AddScoped<IRenderClientProgramVersionRepository, DbRenderClientProgramVersionRepository>();
+        services.AddScoped<UserManagementRepository>();
+        services.AddScoped<ProjectRepository>();
+        services.AddScoped<RenderClientRepository>();
+        services.AddScoped<RenderClientProgramVersionRepository>();
     }
 }

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
-using PixelGrid.Server.Domain;
-using PixelGrid.Server.Domain.Entities;
-using PixelGrid.Server.Domain.Repositories;
+using PixelGrid.Server.Database;
+using PixelGrid.Server.Database.Entities;
+using PixelGrid.Server.Database.Repositories;
 using PixelGrid.Server.Hubs;
 using PixelGrid.Server.Options;
 using PixelGrid.Shared.Hubs;
@@ -15,7 +15,7 @@ namespace PixelGrid.Server.Services;
 public class RenderJobManagementService(
     ApplicationDbContext dbContext,
     IOptions<RendererOptions> options,
-    IRenderClientProgramVersionRepository programVersionRepository,
+    RenderClientProgramVersionRepository programVersionRepository,
     IHubContext<RenderHub, IRenderHub.IClient> renderHub,
     ILogger<RenderJobManagementService> logger)
 {

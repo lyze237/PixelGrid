@@ -1,4 +1,4 @@
-using PixelGrid.Server.Domain.Repositories;
+using PixelGrid.Server.Database.Repositories;
 
 namespace PixelGrid.Server.Services;
 
@@ -7,7 +7,7 @@ namespace PixelGrid.Server.Services;
 /// </summary>
 public class UserManagementService(
     JwtService jwtService,
-    IUserManagementRepository userManagement,
+    UserManagementRepository userManagement,
     ILogger<UserManagementService> logger)
 {
     /// <summary>

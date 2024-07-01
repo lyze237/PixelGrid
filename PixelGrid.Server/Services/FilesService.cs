@@ -1,10 +1,9 @@
 using Google.Protobuf;
 using System.Security.Cryptography;
 using Grpc.Core;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
-using PixelGrid.Server.Domain.Entities;
-using PixelGrid.Server.Domain.Repositories;
+using PixelGrid.Server.Database.Entities;
+using PixelGrid.Server.Database.Repositories;
 using PixelGrid.Server.Infra.Exceptions;
 using PixelGrid.Server.Options;
 
@@ -14,7 +13,7 @@ namespace PixelGrid.Server.Services;
 /// Service to manage files and file operations.
 /// </summary>
 public class FilesService(
-    IProjectRepository projectRepository,
+    ProjectRepository projectRepository,
     IOptions<RendererOptions> options,
     ILogger<FilesService> logger)
 {

@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Security.Cryptography;
-using System.Text;
 using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -10,8 +9,6 @@ using PixelGrid.Client.Extensions;
 using PixelGrid.Client.Options;
 using PixelGrid.Client.renderer;
 using PixelGrid.Shared.Hubs;
-using PixelGrid.Shared.Renderer;
-using PixelGrid.Shared.Renderer.Options;
 using TypedSignalR.Client;
 
 namespace PixelGrid.Client;
