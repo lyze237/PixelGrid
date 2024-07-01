@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using PixelGrid.Client.renderer.abstracts;
 using PixelGrid.Client.renderer.Extensions;
 using PixelGrid.Shared.Renderer;
+using PixelGrid.Shared.Renderer.Options;
 
 namespace PixelGrid.Client.renderer.blender;
 

@@ -1,8 +1,7 @@
 using System.Runtime.Serialization;
-using PixelGrid.Client.renderer.abstracts;
-using PixelGrid.Client.renderer.exceptions;
+using PixelGrid.Shared.Renderer.Exceptions;
 
-namespace PixelGrid.Client.renderer.blender;
+namespace PixelGrid.Shared.Renderer.Options;
 
 public class BlenderOptions(Engine engine) : RenderOptions
 {

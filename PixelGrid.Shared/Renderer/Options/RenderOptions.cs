@@ -1,4 +1,4 @@
-namespace PixelGrid.Client.renderer.abstracts;
+namespace PixelGrid.Shared.Renderer.Options;
 
 public abstract class RenderOptions
 {

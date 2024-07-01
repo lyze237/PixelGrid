@@ -1,9 +1,7 @@
 using System.Globalization;
 using System.Runtime.Serialization;
-using PixelGrid.Client.renderer.abstracts;
-using PixelGrid.Client.renderer.blender;
 
-namespace PixelGrid.Client.renderer.povray;
+namespace PixelGrid.Shared.Renderer.Options;
 
 public class PovrayOptions : RenderOptions
 {
