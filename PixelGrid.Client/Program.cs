@@ -26,7 +26,7 @@ builder.Services.AddKeyedTransient<IRenderer, PovrayRenderer>(RenderType.Povray)
 builder.Services.AddRefitClient<IApiClient>()
     .ConfigureHttpClient(c =>
     {
-        c.BaseAddress = new Uri(renderersOptions.Url.AppendIfNeeded("/") + "api/");
+        c.BaseAddress = new Uri(renderersOptions.Url);
         c.DefaultRequestHeaders.Add(HeaderNames.Authorization, $"Bearer {renderersOptions.Token}");
     });
 

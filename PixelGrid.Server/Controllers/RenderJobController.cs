@@ -11,21 +11,13 @@ using PixelGrid.Shared.Renderer.Options;
 
 namespace PixelGrid.Server.Controllers;
 
-/// <summary>
-/// Represents a controller for managing render jobs.
-/// </summary>
 [Authorize]
-[Route("api/[controller]")]
+[Route("Api/[controller]")]
 [ApiController]
 public class RenderJobController(ApplicationDbContext dbContext, RenderJobManagementService renderJobManagementService, ILogger<RenderJobController> logger) : ControllerBase
 {
-    /// <summary>
-    /// Starts the render test.
-    /// </summary>
-    /// <param name="request">The start render test request.</param>
-    /// <param name="context">The server call context.</param>
-    /// <returns>The start render test response.</returns>
-    public async Task<ActionResult> StartTestRender(StartRenderTestRequest request, ServerCallContext context)
+    [HttpGet("StartTestRender")]
+    public async Task<ActionResult> StartTestRender([FromQuery] StartRenderTestRequest request)
     {
         dbContext.Teams.RemoveRange(dbContext.Teams);
         var team = dbContext.Teams.Add(new TeamEntity

@@ -19,8 +19,7 @@ builder.Services.AddJwtAuthentication(jwtOptions);
 builder.Services.AddSignalR();
 builder.Services.AddSettings(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-//builder.Services.AddSwaggerThings(builder.Configuration);
+builder.Services.AddSwaggerThings(builder.Configuration);
 builder.Services.AddCors();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 

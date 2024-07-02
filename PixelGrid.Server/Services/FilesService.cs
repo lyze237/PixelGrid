@@ -12,9 +12,6 @@ using PixelGrid.Shared.Models.Controller;
 
 namespace PixelGrid.Server.Services;
 
-/// <summary>
-/// Service to manage files and file operations.
-/// </summary>
 public class FilesService(
     ProjectRepository projectRepository,
     IOptions<RendererOptions> options,
@@ -35,12 +32,6 @@ public class FilesService(
         return Result.Ok(new RequestProjectFileListResponse(filePaths));
     }
 
-    /// <summary>
-    /// Retrieves the length of a file.
-    /// </summary>
-    /// <param name="request">The request containing the file name.</param>
-    /// <returns>The response containing the length of the file.</returns>
-    /// <exception cref="FileNotFoundException">Thrown if the file does not exist.</exception>
     public Result<RequestFileLengthResponse> GetFileLength(RequestFileLengthRequest request)
     {
         logger.LogInformation("Requesting file metadata for {File} in {Project} project", request.FilePath, request.ProjectId);
@@ -55,11 +46,6 @@ public class FilesService(
         return Result.Ok(new RequestFileLengthResponse(file.Length));
     }
 
-    /// <summary>
-    /// Requests a file and streams its contents to the client.
-    /// </summary>
-    /// <param name="request">The request containing the file information.</param>
-    /// <exception cref="FileNotFoundException">Thrown if the file does not exist.</exception>
     public async Task<Result<string>> RequestFile(RequestFileRequest request)
     {
         logger.LogInformation("Requesting file {File}", request.FilePath);
@@ -72,13 +58,6 @@ public class FilesService(
         return Result.Ok(path);
     }
 
-    /// <summary>
-    /// Compares the chunks of a file received from the client with the corresponding chunks on the server.
-    /// </summary>
-    /// <param name="requestStream">The stream of CompareFileChunksRequest objects representing the chunks of the file received from the client.</param>
-    /// <param name="responseStream">The stream to send CompareFileChunksResponse objects back to the client.</param>
-    /// <exception cref="EndOfStreamException">Thrown if the request stream has ended prematurely before receiving all the expected chunks.</exception>
-    /// <exception cref="ArgumentException">Thrown if the first request does not contain the file name.</exception>
     public async Task CompareFileChunks(IAsyncStreamReader<CompareFileChunksRequest> requestStream,
         IServerStreamWriter<CompareFileChunksResponse> responseStream)
     {

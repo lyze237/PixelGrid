@@ -5,9 +5,9 @@ namespace PixelGrid.Client.Services;
 
 public interface IApiClient
 {
-    [Get("Files/RequestProjectFileList")]
-    Task<IApiResponse<RequestProjectFileListResponse>> RequestProjectFileList(RequestProjectFileListRequest request);
+    [Get("/Api/Files/RequestProjectFileList")]
+    Task<IApiResponse<RequestProjectFileListResponse>> RequestProjectFileList([Query] RequestProjectFileListRequest request);
 
-    [Get("Files/RequestFile")]
-    Task<HttpContent> RequestFile(RequestFileRequest request);
+    [Get("/Api/Files/RequestFile")]
+    Task<HttpContent> RequestFile([Query] RequestFileRequest request);
 }

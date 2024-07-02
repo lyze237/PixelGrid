@@ -7,23 +7,21 @@ using PixelGrid.Shared.Models.Controller;
 
 namespace PixelGrid.Server.Controllers;
 
-/// <summary>
-/// Represents a controller for managing render jobs.
-/// </summary>
 [Authorize(Policy = "RenderClient")]
-[Route("api/[controller]")]
+[Route("Api/[controller]")]
 [ApiController]
 public class FilesController(FilesService filesService) : ControllerBase
 {
-    public Task<ActionResult> RequestProjectFileList(RequestProjectFileListRequest request,
-        ServerCallContext context) =>
+    [HttpGet("RequestProjectFileList")]
+    public Task<ActionResult> RequestProjectFileList([FromQuery] RequestProjectFileListRequest request) =>
         filesService.RequestProjectFileList(request).ToActionResult();
 
-    public async Task<ActionResult> RequestFileLength(RequestFileLengthRequest request,
-        ServerCallContext context) =>
+    [HttpGet("RequestFileLength")]
+    public async Task<ActionResult> RequestFileLength([FromQuery] RequestFileLengthRequest request) =>
         filesService.GetFileLength(request).ToActionResult();
 
-    public async Task<IActionResult> RequestFile(RequestFileRequest request)
+    [HttpGet("RequestFile")]
+    public async Task<IActionResult> RequestFile([FromQuery] RequestFileRequest request)
     {
         var result = await filesService.RequestFile(request);
         return result.IsFailed

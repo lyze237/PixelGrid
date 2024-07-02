@@ -9,16 +9,8 @@ using PixelGrid.Server.Options;
 
 namespace PixelGrid.Server.Configurations;
 
-/// <summary>
-/// Defines methods to configure JWT authentication.
-/// </summary>
 public static class JwtConfiguratoin
 {
-    /// <summary>
-    /// Adds JWT authentication to the service collection.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="jwtOptions">The JWT options.</param>
     public static void AddJwtAuthentication(this IServiceCollection services, JwtOptions jwtOptions)
     {
         services.AddAuthorizationBuilder()

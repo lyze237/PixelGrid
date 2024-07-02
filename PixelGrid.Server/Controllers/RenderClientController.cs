@@ -8,20 +8,12 @@ using PixelGrid.Shared.Models.Controller;
 
 namespace PixelGrid.Server.Controllers;
 
-/// <summary>
-/// Represents a controller for managing client operations.
-/// </summary>
-[Route("api/[controller]")]
+[Route("Api/[controller]")]
 [ApiController]
 public class RenderClientController(RenderClientsManagementService renderClientsManagementService, ILogger<RenderClientController> logger) : ControllerBase
 {
-    /// <summary>
-    /// Registers a client.
-    /// </summary>
-    /// <param name="request">The registration request.</param>
-    /// <param name="context">The server call context.</param>
-    /// <returns>The registration response.</returns>
     [Authorize]
-    public async Task<ActionResult> Register(RenderClientRegisterRequest request, ServerCallContext context) =>
+    [HttpPost("Register")]
+    public async Task<ActionResult> Register(RenderClientRegisterRequest request) =>
         await renderClientsManagementService.Register(request).ToActionResult();
 }

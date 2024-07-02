@@ -9,9 +9,6 @@ using PixelGrid.Shared.Hubs;
 
 namespace PixelGrid.Server.Services;
 
-/// <summary>
-/// Service for managing render jobs.
-/// </summary>
 public class RenderJobManagementService(
     ApplicationDbContext dbContext,
     IOptions<RendererOptions> options,

@@ -5,15 +5,8 @@ using PixelGrid.Server.Services;
 
 namespace PixelGrid.Server.Configurations;
 
-/// <summary>
-/// This static class is responsible for registering the dependencies used in the application.
-/// </summary>
 public static class DependencyConfigurations
 {
-    /// <summary>
-    /// Registers the dependencies used in the application.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
     public static void RegisterDependencies(this IServiceCollection services)
     {
         services.AddScoped<IAuthorizationHandler, RendererAuthorizationHandler>();

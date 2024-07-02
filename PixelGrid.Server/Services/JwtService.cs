@@ -9,16 +9,8 @@ using PixelGrid.Server.Options;
 
 namespace PixelGrid.Server.Services;
 
-/// <summary>
-/// Service for generating and managing JSON Web Tokens (JWT).
-/// </summary>
 public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions> options)
 {
-    /// <summary>
-    /// Generates a JSON Web Token (JWT) for the given user entity.
-    /// </summary>
-    /// <param name="userEntity">The user entity for which to generate the token.</param>
-    /// <returns>The generated JWT token string.</returns>
     public async Task<string> GenerateUserTokenAsync(UserEntity userEntity)
     {
         var roles = await userManager.GetRolesAsync(userEntity);
@@ -43,11 +35,6 @@ public class JwtService(UserManager<UserEntity> userManager, IOptions<JwtOptions
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }
 
-    /// <summary>
-    /// Generates a JSON Web Token (JWT) for the given client entity.
-    /// </summary>
-    /// <param name="renderClient">The client entity for which to generate the token.</param>
-    /// <returns>The generated JWT token string.</returns>
     public Task<string> GenerateClientTokenAsync(RenderClientEntity renderClient)
     {
         var claims = new List<Claim>

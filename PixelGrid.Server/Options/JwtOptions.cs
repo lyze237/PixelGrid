@@ -1,8 +1,5 @@
 namespace PixelGrid.Server.Options;
 
-/// <summary>
-/// Options for configuring JWT authentication.
-/// </summary>
 public class JwtOptions
 {
     public string Authority { get; set; }
