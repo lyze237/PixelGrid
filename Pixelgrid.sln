@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Client", "PixelGr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Server", "PixelGrid.Server\PixelGrid.Server.csproj", "{14603388-F26B-4A22-B574-655F246FDFD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Server.Infra", "PixelGrid.Server.Infra\PixelGrid.Server.Infra.csproj", "{1846F812-D5DA-4D1B-97E2-A3EFB0538F0B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelGrid.Shared", "PixelGrid.Shared\PixelGrid.Shared.csproj", "{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{0332E212-119F-4467-9723-9A1734B2D528}"
@@ -24,10 +22,6 @@ Global
 		{14603388-F26B-4A22-B574-655F246FDFD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14603388-F26B-4A22-B574-655F246FDFD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14603388-F26B-4A22-B574-655F246FDFD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1846F812-D5DA-4D1B-97E2-A3EFB0538F0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1846F812-D5DA-4D1B-97E2-A3EFB0538F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1846F812-D5DA-4D1B-97E2-A3EFB0538F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1846F812-D5DA-4D1B-97E2-A3EFB0538F0B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E2DD49C-BD58-4AC9-A71C-BDDE56FCB9E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -35,6 +29,5 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{14603388-F26B-4A22-B574-655F246FDFD4} = {0332E212-119F-4467-9723-9A1734B2D528}
-		{1846F812-D5DA-4D1B-97E2-A3EFB0538F0B} = {0332E212-119F-4467-9723-9A1734B2D528}
 	EndGlobalSection
 EndGlobal

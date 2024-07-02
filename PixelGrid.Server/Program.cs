@@ -11,13 +11,16 @@ builder.Services.RegisterDependencies();
 
 var jwtOptions = new JwtOptions();
 builder.Configuration.Bind("jwt", jwtOptions);
-builder.Services.AddGrpc().AddJsonTranscoding();
+
+builder.Services.AddControllers();
+builder.Services.AddGrpc();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddJwtAuthentication(jwtOptions);
 builder.Services.AddSignalR();
 builder.Services.AddSettings(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerWithGrpc(builder.Configuration);
+builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerThings(builder.Configuration);
 builder.Services.AddCors();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 
@@ -37,11 +40,8 @@ app.UseCors(options => options.AllowAnyOrigin());
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGrpcService<AuthController>();
-app.MapGrpcService<RenderClientController>();
-app.MapGrpcService<RenderJobController>();
-app.MapGrpcService<FilesController>();
-
+app.MapControllers();
+app.MapGrpcService<ChunksController>();
 app.MapHub<RenderHub>("/hubs/render");
 
 app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();

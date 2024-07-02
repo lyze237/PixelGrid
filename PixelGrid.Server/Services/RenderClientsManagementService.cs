@@ -1,9 +1,11 @@
 using System.Security.Authentication;
 using System.Security.Claims;
+using FluentResults;
 using Microsoft.AspNetCore.SignalR;
 using PixelGrid.Server.Database.Entities;
 using PixelGrid.Server.Database.Repositories;
 using PixelGrid.Server.Infra.Exceptions;
+using PixelGrid.Shared.Models.Controller;
 using PixelGrid.Shared.Renderer;
 
 namespace PixelGrid.Server.Services;
@@ -22,18 +24,15 @@ public class RenderClientsManagementService(
     /// </summary>
     /// <param name="request">The registration request.</param>
     /// <returns>The registration response.</returns>
-    public async Task<RenderClientRegisterResponse> Register(RenderClientRegisterRequest request)
+    public async Task<Result<RenderClientRegisterResponse>> Register(RenderClientRegisterRequest request)
     {
         logger.LogInformation("Registering client {Name}", request.Name);
 
         var client = await renderClientRepository.CreateAsync(RenderClientEntity.CreateClient(request.Name));
         await renderClientRepository.SaveAsync();
 
-        return new RenderClientRegisterResponse
-        {
-            Success = true,
-            Token = await jwtService.GenerateClientTokenAsync(client)
-        };
+        var token = await jwtService.GenerateClientTokenAsync(client);
+        return Result.Ok(new RenderClientRegisterResponse(token));
     }
 
     /// <summary>

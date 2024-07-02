@@ -1,57 +1,34 @@
+using FluentResults.Extensions.AspNetCore;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PixelGrid.Server.Services;
+using PixelGrid.Shared.Models.Controller;
 
 namespace PixelGrid.Server.Controllers;
 
 /// <summary>
 /// Represents a controller for managing render jobs.
 /// </summary>
-[Authorize]
-public class FilesController(
-    FilesService filesService,
-    RenderJobManagementService renderJobManagementService,
-    ILogger<RenderJobController> logger) : FilesControllerProto.FilesControllerProtoBase
+[Authorize(Policy = "RenderClient")]
+[Route("api/[controller]")]
+[ApiController]
+public class FilesController(FilesService filesService) : ControllerBase
 {
-    [Authorize(Policy = "RenderClient")]
-    public override Task<RequestProjectFileListResponse> RequestProjectFileList(RequestProjectFileListRequest request, ServerCallContext context) => 
-        filesService.RequestProjectFileList(request);
-
-    /// <summary>
-    /// Requests a files length.
-    /// </summary>
-    /// <param name="request">The request to get file metadata.</param>
-    /// <param name="context">The server call context.</param>
-    /// <returns>The response containing the file metadata.</returns>
-    /// <exception cref="FileNotFoundException">Thrown when the requested file is not found.</exception>
-    [Authorize(Policy = "RenderClient")]
-    public override async Task<RequestFileLengthResponse> RequestFileLength(RequestFileLengthRequest request,
+    public Task<ActionResult> RequestProjectFileList(RequestProjectFileListRequest request,
         ServerCallContext context) =>
-        filesService.GetFileLength(request);
+        filesService.RequestProjectFileList(request).ToActionResult();
 
-    /// <summary>
-    /// Requests a file and sends it through a server stream.
-    /// </summary>
-    /// <param name="request">The request object containing the file name.</param>
-    /// <param name="responseStream">The server stream to send the file content.</param>
-    /// <param name="context">The server call context.</param>
-    /// <exception cref="FileNotFoundException">Thrown if the requested file does not exist.</exception>
-    [Authorize(Policy = "RenderClient")]
-    public override async Task RequestFile(RequestFileRequest request,
-        IServerStreamWriter<RequestFileResponse> responseStream, ServerCallContext context)
+    public async Task<ActionResult> RequestFileLength(RequestFileLengthRequest request,
+        ServerCallContext context) =>
+        filesService.GetFileLength(request).ToActionResult();
+
+    public async Task<IActionResult> RequestFile(RequestFileRequest request)
     {
-        await filesService.RequestFile(request, responseStream);
+        var result = await filesService.RequestFile(request);
+        return result.IsFailed
+            ? result.ToResult().ToActionResult()
+            : PhysicalFile(result.Value, "application/octet-stream");
     }
-
-    /// <summary>
-    /// Compares file chunks.
-    /// </summary>
-    /// <param name="requestStream">The stream of CompareFileChunksRequest.</param>
-    /// <param name="responseStream">The stream of CompareFileChunksResponse.</param>
-    /// <param name="context">The server call context.</param>
-    /// <returns>The task representing the asynchronous operation.</returns>
-    public override async Task CompareFileChunks(IAsyncStreamReader<CompareFileChunksRequest> requestStream,
-        IServerStreamWriter<CompareFileChunksResponse> responseStream, ServerCallContext context) =>
-        await filesService.CompareFileChunks(requestStream, responseStream);
 
 }

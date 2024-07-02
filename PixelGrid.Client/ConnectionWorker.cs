@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net.Http.Json;
 using System.Security.Cryptography;
 using Google.Protobuf;
 using Grpc.Core;
@@ -8,13 +9,15 @@ using Microsoft.Extensions.Options;
 using PixelGrid.Client.Extensions;
 using PixelGrid.Client.Options;
 using PixelGrid.Client.renderer;
+using PixelGrid.Client.Services;
 using PixelGrid.Shared.Hubs;
+using PixelGrid.Shared.Models.Controller;
 using TypedSignalR.Client;
 
 namespace PixelGrid.Client;
 
 public class ConnectionWorker(
-    RenderFactory factory,
+    RenderFactory renderFactory,
     IServiceProvider serviceProvider,
     IOptions<RendererOptions> rendererOptions,
     ILogger<ConnectionWorker> logger) : BackgroundService
@@ -59,7 +62,7 @@ public class ConnectionWorker(
         {
             foreach (var (version, exe) in versions)
             {
-                await proxy.RegisterProgram(type, version, factory.GetRenderer(type, exe).GetCapabilities());
+                await proxy.RegisterProgram(type, version, renderFactory.GetRenderer(type, exe).GetCapabilities());
             }
         }
 
@@ -71,7 +74,10 @@ public class ConnectionWorker(
     }
 }
 
-public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<ConnectionReceiver> logger)
+public class ConnectionReceiver(
+    IApiClient apiClient,
+    IOptions<RendererOptions> options,
+    ILogger<ConnectionReceiver> logger)
     : IRenderHub.IClient
 {
     private readonly GrpcChannel grpc = GrpcChannel.ForAddress(options.Value.Url);
@@ -93,17 +99,19 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
         {
             logger.LogInformation("Got project id {Project} assigned", projectId);
 
-            var filesChannel = new FilesControllerProto.FilesControllerProtoClient(grpc);
-            var files = await filesChannel.RequestProjectFileListAsync(new RequestProjectFileListRequest
+            var response = await apiClient.RequestProjectFileList(new RequestProjectFileListRequest(projectId));
+
+            if (!response.IsSuccessStatusCode)
             {
-                ProjectId = projectId
-            }, headers);
+                logger.LogError(response.Error, "Response is errored");
+                return;
+            }
 
             var projectDirectory = Path.Combine(options.Value.Workdir, projectId.ToString());
             if (!Directory.Exists(projectDirectory))
                 Directory.CreateDirectory(projectDirectory);
 
-            foreach (var responseFile in files.Path)
+            foreach (var responseFile in response.Content.FilePath)
             {
                 var responsePath = Path.Combine(projectDirectory, responseFile);
 
@@ -114,9 +122,9 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
                     Directory.CreateDirectory(responseDirectory);
 
                 if (File.Exists(responsePath))
-                    await RequestChunks(filesChannel, responseFile, responsePath, projectId);
+                    await RequestChunks(responseFile, responsePath, projectId);
                 else
-                    await RequestFile(filesChannel, responseFile, responsePath, projectId);
+                    await RequestFile(responseFile, responsePath, projectId);
             }
         }
         catch (Exception e)
@@ -125,17 +133,17 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
         }
     }
 
-    private async Task RequestChunks(FilesControllerProto.FilesControllerProtoClient filesChannel, string responseFile,
-        string responsePath, long projectId)
+    private async Task RequestChunks(string responseFile, string responsePath, long projectId)
     {
         logger.LogInformation("File exists, checking chunks for {File}", responseFile);
-        
+
         var buffer = new byte[4096];
         int bytesRead;
         await using var currentFileStream = File.OpenRead(responsePath);
         await using var newFileStream = File.Create($"{responsePath}.{Random.Shared.NextInt64()}.tmp");
 
-        var request = filesChannel.CompareFileChunks(headers);
+        var chunksChannel = new ChunksControllerProto.ChunksControllerProtoClient(grpc);
+        var request = chunksChannel.CompareFileChunks(headers);
 
         await request.RequestStream.WriteAsync(new CompareFileChunksRequest
         {
@@ -176,22 +184,14 @@ public class ConnectionReceiver(IOptions<RendererOptions> options, ILogger<Conne
         }
     }
 
-    private async Task RequestFile(FilesControllerProto.FilesControllerProtoClient filesChannel,
-        string responseFile, string responsePath, long projectId)
+    private async Task RequestFile(string responseFile, string responsePath, long projectId)
     {
         logger.LogInformation("File doesn't exists, downloading {File}", responseFile);
-        
-        using var response = filesChannel.RequestFile(new RequestFileRequest
-        {
-            FileName = responseFile,
-            ProjectId = projectId
-        }, headers);
+
+        var request = await apiClient.RequestFile(new RequestFileRequest(projectId, responseFile));
+        await using var responseStream = await request.ReadAsStreamAsync();
 
         await using var fileStream = File.Create(responsePath);
-        await foreach (var chunk in response.ResponseStream.ReadAllAsync())
-        {
-            logger.LogInformation("Receiving chunk {Chunk}", chunk.Content.Length);
-            chunk.Content.WriteTo(fileStream);
-        }
+        await responseStream.CopyToAsync(fileStream);
     }
 }

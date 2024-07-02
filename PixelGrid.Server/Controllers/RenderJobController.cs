@@ -1,8 +1,12 @@
+using FluentResults;
+using FluentResults.Extensions.AspNetCore;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PixelGrid.Server.Database;
 using PixelGrid.Server.Database.Entities;
 using PixelGrid.Server.Services;
+using PixelGrid.Shared.Models.Controller;
 using PixelGrid.Shared.Renderer.Options;
 
 namespace PixelGrid.Server.Controllers;
@@ -11,7 +15,9 @@ namespace PixelGrid.Server.Controllers;
 /// Represents a controller for managing render jobs.
 /// </summary>
 [Authorize]
-public class RenderJobController(ApplicationDbContext dbContext, RenderJobManagementService renderJobManagementService, ILogger<RenderJobController> logger) : RenderJobControllerProto.RenderJobControllerProtoBase
+[Route("api/[controller]")]
+[ApiController]
+public class RenderJobController(ApplicationDbContext dbContext, RenderJobManagementService renderJobManagementService, ILogger<RenderJobController> logger) : ControllerBase
 {
     /// <summary>
     /// Starts the render test.
@@ -19,7 +25,7 @@ public class RenderJobController(ApplicationDbContext dbContext, RenderJobManage
     /// <param name="request">The start render test request.</param>
     /// <param name="context">The server call context.</param>
     /// <returns>The start render test response.</returns>
-    public override async Task<StartRenderTestResponse> StartTestRender(StartRenderTestRequest request, ServerCallContext context)
+    public async Task<ActionResult> StartTestRender(StartRenderTestRequest request, ServerCallContext context)
     {
         dbContext.Teams.RemoveRange(dbContext.Teams);
         var team = dbContext.Teams.Add(new TeamEntity
@@ -72,7 +78,7 @@ public class RenderJobController(ApplicationDbContext dbContext, RenderJobManage
         await dbContext.SaveChangesAsync();
 
         await renderJobManagementService.ForceStartProject(project);
-        
-        return new StartRenderTestResponse();
+
+        return Result.Ok(new StartRenderTestResponse()).ToActionResult();
     }
 }

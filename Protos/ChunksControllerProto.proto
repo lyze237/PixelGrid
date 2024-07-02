@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+service ChunksControllerProto {
+  rpc CompareFileChunks(stream CompareFileChunksRequest) returns (stream CompareFileChunksResponse) {
+  }
+}
+
+message CompareFileChunksResponse {
+  oneof response {
+    ChunkStatus status = 3;
+    bytes content = 2;
+  }
+}
+
+message CompareFileChunksFileInformation {
+  int64 projectId = 1;
+  string fileName = 2;
+}
+
+message CompareFileChunksRequest {
+  oneof request {
+    CompareFileChunksFileInformation fileInfo = 1;
+    bytes hash = 2;
+  }
+}
+
+message ChunkStatus {
+  oneof status {
+    bool override = 1;
+    bool eof = 2;
+  }
+}

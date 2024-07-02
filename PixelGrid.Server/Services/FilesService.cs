@@ -1,11 +1,14 @@
 using Google.Protobuf;
 using System.Security.Cryptography;
+using FluentResults;
 using Grpc.Core;
 using Microsoft.Extensions.Options;
+using OracleInternal.Sharding;
 using PixelGrid.Server.Database.Entities;
 using PixelGrid.Server.Database.Repositories;
 using PixelGrid.Server.Infra.Exceptions;
 using PixelGrid.Server.Options;
+using PixelGrid.Shared.Models.Controller;
 
 namespace PixelGrid.Server.Services;
 
@@ -17,23 +20,19 @@ public class FilesService(
     IOptions<RendererOptions> options,
     ILogger<FilesService> logger)
 {
-    public async Task<RequestProjectFileListResponse> RequestProjectFileList(RequestProjectFileListRequest request)
+    public async Task<Result<RequestProjectFileListResponse>> RequestProjectFileList(
+        RequestProjectFileListRequest request)
     {
         var project = await projectRepository.GetByIdAsync(request.ProjectId);
         if (project == null)
-            throw new EntityNotFoundException<ProjectEntity>("Project not found");
+            return Result.Fail("Project not found");
 
         var projectDir = Path.Combine(options.Value.Workdir, project.Id.ToString());
 
-        return new RequestProjectFileListResponse
-        {
-            Path =
-            {
-                Directory
-                    .GetFiles(projectDir, "*", SearchOption.AllDirectories)
-                    .Select(d => d[(projectDir.Length + 1)..]).ToArray()
-            }
-        };
+        var filePaths = Directory
+            .GetFiles(projectDir, "*", SearchOption.AllDirectories)
+            .Select(d => d[(projectDir.Length + 1)..]).ToArray();
+        return Result.Ok(new RequestProjectFileListResponse(filePaths));
     }
 
     /// <summary>
@@ -42,52 +41,35 @@ public class FilesService(
     /// <param name="request">The request containing the file name.</param>
     /// <returns>The response containing the length of the file.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the file does not exist.</exception>
-    public RequestFileLengthResponse GetFileLength(RequestFileLengthRequest request)
+    public Result<RequestFileLengthResponse> GetFileLength(RequestFileLengthRequest request)
     {
-        logger.LogInformation("Requesting file metadata for {File}", request.FileName);
+        logger.LogInformation("Requesting file metadata for {File} in {Project} project", request.FilePath, request.ProjectId);
 
-        var path = Path.Combine(options.Value.Workdir, request.ProjectId.ToString(), request.FileName);
+        var path = Path.Combine(options.Value.Workdir, request.ProjectId.ToString(), request.FilePath);
         if (!File.Exists(path))
-            throw new FileNotFoundException();
+            return Result.Fail("Invalid file");
 
         logger.LogInformation("Requesting path metadata for {File}", path);
 
         var file = new FileInfo(path);
-
-        return new RequestFileLengthResponse
-        {
-            Length = file.Length
-        };
+        return Result.Ok(new RequestFileLengthResponse(file.Length));
     }
 
     /// <summary>
     /// Requests a file and streams its contents to the client.
     /// </summary>
     /// <param name="request">The request containing the file information.</param>
-    /// <param name="responseStream">The server stream to write the file content to.</param>
     /// <exception cref="FileNotFoundException">Thrown if the file does not exist.</exception>
-    public async Task RequestFile(RequestFileRequest request, IServerStreamWriter<RequestFileResponse> responseStream)
+    public async Task<Result<string>> RequestFile(RequestFileRequest request)
     {
-        logger.LogInformation("Requesting file {File}", request.FileName);
+        logger.LogInformation("Requesting file {File}", request.FilePath);
 
-        var path = Path.Combine(options.Value.Workdir, request.ProjectId.ToString(), request.FileName);
+        var path = GetFilePath(request.ProjectId, request.FilePath);
         if (!File.Exists(path))
-            throw new FileNotFoundException();
+            return Result.Fail("Invalid file");
 
         logger.LogInformation("Requesting path {File}", path);
-
-        await using var file = File.OpenRead(path);
-        var buffer = new byte[1024];
-        int bytesRead;
-
-        while ((bytesRead = file.Read(buffer, 0, buffer.Length)) > 0)
-        {
-            logger.LogInformation("Sending {Bytes} bytes", bytesRead);
-            await responseStream.WriteAsync(new RequestFileResponse
-            {
-                Content = ByteString.CopyFrom(buffer, 0, bytesRead)
-            });
-        }
+        return Result.Ok(path);
     }
 
     /// <summary>
@@ -166,14 +148,14 @@ public class FilesService(
         logger.LogInformation("Finished sending all chunks");
     }
 
-    private FileStream OpenFile(string fileName, long projectId)
+    private FileStream OpenFile(string filePath, long projectId)
     {
-        logger.LogInformation("Checking file path {FileName} in {Project} project", fileName, projectId);
+        logger.LogInformation("Checking file path {FileName} in {Project} project", filePath, projectId);
 
-        if (string.IsNullOrWhiteSpace(fileName))
-            throw new ArgumentException("Bad file name", nameof(fileName));
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("Bad file name", nameof(filePath));
 
-        var path = Path.Combine(options.Value.Workdir, projectId.ToString(), fileName);
+        var path = GetFilePath(projectId, filePath);
         if (!File.Exists(path))
             throw new FileNotFoundException();
 
@@ -181,4 +163,7 @@ public class FilesService(
 
         return File.OpenRead(path);
     }
+
+    private string GetFilePath(long projectId, string filePath) =>
+        Path.Combine(options.Value.Workdir, projectId.ToString(), filePath);
 }

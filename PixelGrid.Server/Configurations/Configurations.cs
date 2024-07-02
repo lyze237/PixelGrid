@@ -28,15 +28,10 @@ public static class Configurations
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The configuration.</param>
-    public static void AddSwaggerWithGrpc(this IServiceCollection services, IConfiguration configuration)
+    public static void AddSwaggerThings(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddGrpcSwagger();
         services.AddSwaggerGen(config =>
         {
-            var filePath = Path.Combine(AppContext.BaseDirectory, "PixelGrid.Server.xml");
-            config.IncludeXmlComments(filePath);
-            config.IncludeGrpcXmlComments(filePath, includeControllerXmlComments: true);
-
             config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,

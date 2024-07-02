@@ -1,4 +1,6 @@
+using FluentResults;
 using PixelGrid.Server.Database.Repositories;
+using PixelGrid.Shared.Models.Controller;
 
 namespace PixelGrid.Server.Services;
 
@@ -15,14 +17,14 @@ public class UserManagementService(
     /// </summary>
     /// <param name="request">The registration request containing the user's details.</param>
     /// <returns>A response indicating the success of the registration operation.</returns>
-    public async Task<AuthRegisterResponse> Register(AuthRegisterRequest request)
+    public async Task<Result<AuthRegisterResponse>> Register(AuthRegisterRequest request)
     {
         logger.LogInformation("Creating user {Username}", request.UserName);
 
-        await userManagement.CreateUserAsync(request.UserName, request.Email, request.Password);
+        var result = await userManagement.CreateUserAsync(request.UserName, request.Email, request.Password);
         logger.LogInformation("Created user {Username}", request.UserName);
 
-        return new AuthRegisterResponse { Success = true };
+        return result.ToResult(_ => new AuthRegisterResponse());
     }
 
     /// <summary>
@@ -30,19 +32,17 @@ public class UserManagementService(
     /// </summary>
     /// <param name="request">The login request containing the user's email and password.</param>
     /// <returns>A response indicating the success of the login operation and the authentication token.</returns>
-    public async Task<AuthLoginResponse> Login(AuthLoginRequest request)
+    public async Task<Result<AuthLoginResponse>> Login(AuthLoginRequest request)
     {
         logger.LogInformation("User {Email} tries to login", request.Email);
 
-        var user = await userManagement.CheckUserPasswordAsync(request.Email, request.Password);
+        var result = await userManagement.CheckUserPasswordAsync(request.Email, request.Password);
         logger.LogInformation("User {Email} logged in successfully", request.Email);
 
-        var token = await jwtService.GenerateUserTokenAsync(user);
+        if (result.IsFailed)
+            return result.ToResult();
 
-        return new AuthLoginResponse
-        {
-            Success = true,
-            Token = token
-        };
+        var token = await jwtService.GenerateUserTokenAsync(result.Value);
+        return Result.Ok(new AuthLoginResponse(token));
     }
 }

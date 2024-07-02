@@ -1,4 +1,4 @@
-using System.Security.Authentication;
+using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using PixelGrid.Server.Database.Entities;
 using PixelGrid.Server.Infra.Exceptions;
@@ -7,7 +7,7 @@ namespace PixelGrid.Server.Database.Repositories;
 
 public class UserManagementRepository(UserManager<UserEntity> userManager, RoleManager<RoleEntity> roleManager)
 {
-    public async Task<UserEntity> CreateUserAsync(string username, string email, string password)
+    public async Task<Result<UserEntity>> CreateUserAsync(string username, string email, string password)
     {
         var user = new UserEntity
         {
@@ -16,22 +16,19 @@ public class UserManagementRepository(UserManager<UserEntity> userManager, RoleM
         };
 
         var result = await userManager.CreateAsync(user, password);
-        if (result.Succeeded)
-            return user;
-
-        throw new CreateUserException("Couldn't create user", result.Errors);
+        return result.Succeeded ? Result.Ok(user) : Result.Fail(result.Errors.Select(e => e.Description));
     }
 
-    public async Task<UserEntity> CheckUserPasswordAsync(string email, string password)
+    public async Task<Result<UserEntity>> CheckUserPasswordAsync(string email, string password)
     {
         var user = await FindUserByEmailAsync(email);
         if (user == null)
             throw new EntityNotFoundException<UserEntity>("Couldn't find user by email");
 
         if (await userManager.CheckPasswordAsync(user, password))
-            return user;
+            return Result.Ok(user);
 
-        throw new InvalidCredentialException();
+        return Result.Fail("Invalid Credentials");
     }
 
     public async Task<UserEntity?> FindUserByEmailAsync(string email) => 

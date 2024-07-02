@@ -8,24 +8,24 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <IncludeHttpRuleProtos>true</IncludeHttpRuleProtos>
     </PropertyGroup>
-
+    
     <ItemGroup>
-        <Protobuf Include="../Protos/AuthControllerProto.proto" />
-        <Protobuf Include="../Protos/RenderClientControllerProto.proto" />
-        <Protobuf Include="../Protos/RenderJobControllerProto.proto" />
-        <Protobuf Include="../Protos/FilesControllerProto.proto" />
+        <Protobuf Include="../Protos/ChunksControllerProto.proto" />
     </ItemGroup>
     
     <ItemGroup>
         <PackageReference Include="Google.Protobuf" Version="3.27.2" />
         <PackageReference Include="Grpc.Net.Client" Version="2.63.0" />
         <PackageReference Include="Grpc.Tools" Version="2.64.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="8.0.6" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.6" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Net.Http.Headers" Version="8.0.6" />
+        <PackageReference Include="Refit" Version="7.1.2" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="7.1.2" />
         <PackageReference Include="TypedSignalR.Client" Version="3.5.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

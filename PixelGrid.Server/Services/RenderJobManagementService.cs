@@ -21,7 +21,6 @@ public class RenderJobManagementService(
 {
     public async Task ForceStartProject(ProjectEntity project)
     {
-
         var team = project.Workspace.Team;
         var renderClients = dbContext.TeamRenderClients
             .Where(rc => rc.Team == team)
